@@ -19,6 +19,8 @@ Recall on two public long-memory benchmarks, on every question the method never 
 
 How it was measured, and how to reproduce it: [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark). The full results and their limits are in [What we measured](#what-we-measured).
 
+Next benchmark: LongMemEval-M (about 500 conversations per question), recall only, planned and run slowly; see [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark).
+
 ## What you need
 
 - Python 3.11 or newer, on macOS or Linux. The engine uses the standard library only.
