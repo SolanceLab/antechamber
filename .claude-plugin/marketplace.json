@@ -1,0 +1,17 @@
+{
+  "name": "antechamber",
+  "owner": { "name": "House of Solance" },
+  "metadata": {
+    "description": "Antechamber: recall for your AI, over every store you connect.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "antechamber",
+      "description": "One question searches every store you connect (notes, chats, memories, a vault) and returns only the best matches. Talks to your own Antechamber server.",
+      "version": "1.0.0",
+      "author": { "name": "House of Solance" },
+      "source": "./plugin"
+    }
+  ]
+}

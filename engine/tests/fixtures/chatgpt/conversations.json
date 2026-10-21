@@ -1,0 +1,31 @@
+[
+  {
+    "title": "Naming the kitten",
+    "conversation_id": "g-cat-0001",
+    "create_time": 1735725600.0,
+    "current_node": "n5",
+    "mapping": {
+      "n0": {"id": "n0", "message": null, "parent": null, "children": ["n1"]},
+      "n1": {"id": "n1", "parent": "n0", "children": ["n2"],
+             "message": {"id": "msg-sys", "author": {"role": "system"}, "create_time": null,
+                         "content": {"content_type": "text", "parts": [""]},
+                         "metadata": {"is_visually_hidden_from_conversation": true}}},
+      "n2": {"id": "n2", "parent": "n1", "children": ["n3", "n4"],
+             "message": {"id": "msg-ask", "author": {"role": "user"}, "create_time": 1735725600.0,
+                         "content": {"content_type": "text", "parts": ["Rae found a grey kitten. What should we call her?"]},
+                         "metadata": {}}},
+      "n3": {"id": "n3", "parent": "n2", "children": [],
+             "message": {"id": "msg-old", "author": {"role": "assistant"}, "create_time": 1735725610.0,
+                         "content": {"content_type": "text", "parts": ["How about Biscuit?"]},
+                         "metadata": {}}},
+      "n4": {"id": "n4", "parent": "n2", "children": ["n5"],
+             "message": {"id": "msg-new", "author": {"role": "assistant"}, "create_time": 1735725620.0,
+                         "content": {"content_type": "text", "parts": ["How about Pepper, for the grey coat?"]},
+                         "metadata": {}}},
+      "n5": {"id": "n5", "parent": "n4", "children": [],
+             "message": {"id": "msg-tool", "author": {"role": "tool"}, "create_time": 1735725630.0,
+                         "content": {"content_type": "text", "parts": ["tool output that must never be indexed"]},
+                         "metadata": {}}}
+    }
+  }
+]

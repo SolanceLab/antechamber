@@ -1,0 +1,41 @@
+[
+  {
+    "uuid": "c-trip-0001",
+    "name": "Trip to the coast",
+    "created_at": "2025-06-01T09:00:00Z",
+    "updated_at": "2025-06-01T09:20:00Z",
+    "chat_messages": [
+      {"uuid": "m-trip-1", "sender": "human", "created_at": "2025-06-01T09:00:00Z",
+       "text": "Planning a day at the coast with Rae next Saturday.",
+       "content": [{"type": "text", "text": "Planning a day at the coast with Rae next Saturday."}]},
+      {"uuid": "m-trip-2", "sender": "assistant", "created_at": "2025-06-01T09:00:30Z",
+       "text": "",
+       "content": [{"type": "thinking", "thinking": "secret reasoning that must never be indexed"},
+                   {"type": "text", "text": "Lovely. Would you like help with the timetable or with packing?"}]},
+      {"uuid": "m-trip-3", "sender": "human", "created_at": "2025-06-01T09:01:00Z",
+       "text": "Rae prefers the 8:15 train because it stops at Harbour Point and has a quiet carriage.",
+       "content": [{"type": "text", "text": "Rae prefers the 8:15 train because it stops at Harbour Point and has a quiet carriage."}]},
+      {"uuid": "m-trip-4", "sender": "assistant", "created_at": "2025-06-01T09:01:30Z",
+       "text": "",
+       "content": [{"type": "tool_use", "name": "lookup", "input": {"q": "timetable"}},
+                   {"type": "text", "text": "Then the 8:15 it is. The return leaves Harbour Point at 18:40."}]},
+      {"uuid": "m-trip-5", "sender": "human", "created_at": "2025-06-01T09:02:00Z",
+       "text": "Perfect, we will pack sandwiches.",
+       "content": [{"type": "text", "text": "Perfect, we will pack sandwiches."}]}
+    ]
+  },
+  {
+    "uuid": "c-bread-0002",
+    "name": "Sourdough starter",
+    "created_at": "2025-07-03T18:00:00Z",
+    "updated_at": "2025-07-03T18:10:00Z",
+    "chat_messages": [
+      {"uuid": "m-bread-1", "sender": "human", "created_at": "2025-07-03T18:00:00Z",
+       "text": "Sam's sourdough starter smells of nail varnish. What should we feed it?",
+       "content": [{"type": "text", "text": "Sam's sourdough starter smells of nail varnish. What should we feed it?"}]},
+      {"uuid": "m-bread-2", "sender": "assistant", "created_at": "2025-07-03T18:00:40Z",
+       "text": "That smell means it is hungry. Feed it at a ratio of one part starter to five parts flour and five parts water, twice a day.",
+       "content": [{"type": "text", "text": "That smell means it is hungry. Feed it at a ratio of one part starter to five parts flour and five parts water, twice a day."}]}
+    ]
+  }
+]

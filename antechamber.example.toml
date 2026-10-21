@@ -1,0 +1,60 @@
+# Antechamber settings. Copy to ~/.config/antechamber/config.toml (or point $ANTECHAMBER_CONFIG at it)
+# and fill in your own values. Keep the real file out of git. Relative paths resolve against this file's folder.
+# Validate without connecting to anything:  python3 engine/antechamber_recall.py --check
+
+[service]                      # the local recall service (listens on 127.0.0.1 only)
+port = 8790
+extensions = ["mcp_http:register"]   # mounts POST /mcp; it stays off until [mcp] key is set
+
+[mcp]
+key = ""                       # or leave empty and set ANTECHAMBER_MCP_KEY in the environment
+
+[embedder]                     # optional; without it notes and chats are searched by words only
+backend = "ollama"             # or "openai" (any OpenAI-compatible /embeddings endpoint)
+url = "http://localhost:11434"
+model = "nomic-embed-text"
+dims = 768
+# api_key_env = "EMBED_KEY"    # NAME of an environment variable holding the key, never the key itself
+# allow_remote_data = false    # a non-local endpoint is refused unless this is true
+
+[index]
+dir = "~/.cache/antechamber"   # one local search index per notes/chats instance
+refresh_minutes = 15           # refreshed in the background, never inside a recall
+
+[recall]
+extra_seat_shelves = []        # e.g. ["vault"]: these shelves ride in extra seats beside the regular ones
+extra_seats = 3
+
+# ---- your stores: one table per instance. Ids: lower-case letters, digits, - or _; never change them.
+
+[[adapters.notes]]
+id = "notes"
+name = "My notes"
+folder = "~/notes"             # a folder of markdown notes (glob = "**/*.md" by default)
+
+# [[adapters.chats]]
+# id = "chats"
+# name = "Assistant chats"
+# path = "~/exports/claude"    # an export file, or a folder holding conversations*.json
+# format = "claude"            # or "chatgpt"
+
+# [[adapters.memories]]        # what a memory writer produced (see engine/adapters/memories.py)
+# id = "memories"
+# folder = "~/memories"
+
+# [[adapters.vaultmap]]        # an Obsidian (or any markdown) vault, searched through vault-map
+# id = "vault"
+# name = "My vault"
+# folder = "~/Documents/Vault"
+# vault_map = "~/tools/vault-map.py"
+# vault_map_sha256 = ""        # optional: pin the exact vault-map release
+
+# [[adapters.service]]         # a store that searches itself, behind one HTTP endpoint
+# id = "wiki"
+# url = "https://search.example.org/recall"
+# api_key_env = "WIKI_KEY"
+
+# [[adapters.pgvector]]        # a pgvector table (needs psycopg)
+# id = "papers"
+# dsn_env = "PAPERS_DSN"
+# table = "passages"
