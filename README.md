@@ -15,7 +15,7 @@ Recall on two public long-memory benchmarks, on every question the method never 
 | Benchmark | Questions | Standard search | Antechamber | Gain |
 |---|---|---|---|---|
 | LoCoMo | 1,493 | 56.7% | **78.9%** | +22.2 points |
-| LongMemEval (S, cleaned) | 412 | 62.6% | **80.3%** | +17.7 points |
+| LongMemEval (S, cleaned) | 412 | 62.6% | **77.7%** | +15.1 points |
 
 How it was measured, and how to reproduce it: [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark). The full results and their limits are in [What we measured](#what-we-measured).
 
@@ -124,7 +124,7 @@ The engine is in `engine/`: `antechamber_recall.py` (fusion and the adapter regi
 | Benchmark | Questions | Standard search | Antechamber | Gain |
 |---|---|---|---|---|
 | LoCoMo | 1,493 | 56.7% | **78.9%** | +22.2 points |
-| LongMemEval (S, cleaned) | 412 | 62.6% | **80.3%** | +17.7 points |
+| LongMemEval (S, cleaned) | 412 | 62.6% | **77.7%** | +15.1 points |
 
 "Found" = every evidence line for the question is among what recall hands the reader. No language model inside recall: local embeddings, keyword shelves, fusion.
 
