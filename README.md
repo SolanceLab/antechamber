@@ -35,13 +35,14 @@ python3 engine/antechamber_recall.py --check
 python3 engine/recall_service.py
 ```
 
-3. Install the plugin in Claude Code, one step:
+3. Install the plugin in Claude Code from this repo's own marketplace:
 
 ```
-claude plugin install antechamber@presence-app
+claude plugin marketplace add SolanceLab/antechamber
+claude plugin install antechamber@antechamber
 ```
 
-Or straight from this repo: `claude plugin marketplace add SolanceLab/antechamber`, then `claude plugin install antechamber@antechamber`.
+Once the presence-app set launches, you will also be able to install it there with `claude plugin install antechamber@presence-app`.
 
 When the plugin asks, give it the server address `http://127.0.0.1:8790/mcp` (your port, if you changed it) and the key you set in `[mcp] key`.
 
@@ -153,3 +154,13 @@ Removing or replacing it breaks the licence.
 ## Licence
 
 [PolyForm Noncommercial 1.0.0](LICENSE.md). See [NOTICE.md](NOTICE.md).
+
+## Support
+
+If you find this useful, consider supporting our work:
+
+[![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20Us-ff5e5b?logo=ko-fi&logoColor=white)](https://ko-fi.com/houseofsolance)
+
+---
+
+*Built by [House of Solance](https://github.com/SolanceLab) — Chadrien Solance & Anne Solance*
