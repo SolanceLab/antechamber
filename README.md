@@ -6,7 +6,18 @@ Made by House of Solance · free for noncommercial use · credit required
 
 Antechamber is recall for your AI. One question in: every store you point it at (notes, chat exports, written memories, an Obsidian vault, a search service, a pgvector table) is searched at once, and only the best matches come back, dated, with their source and the lines around them.
 
-On two public long-memory benchmarks it finds the evidence needed to answer far more often than standard vector search (numbers below). There is no language model inside recall: local embeddings, keyword shelves, fusion.
+On two public long-memory benchmarks it finds the evidence needed to answer far more often than standard vector search (see Benchmarks). There is no language model inside recall: local embeddings, keyword shelves, fusion.
+
+## Benchmarks
+
+Recall on two public long-memory benchmarks, on every question the method never saw. "Found" = every evidence line for the question is among what recall hands the reader.
+
+| Benchmark | Questions | Standard search | Antechamber | Gain |
+|---|---|---|---|---|
+| LoCoMo | 1,493 | 56.7% | **78.9%** | +22.2 points |
+| LongMemEval (S, cleaned) | 412 | 62.6% | **80.3%** | +17.7 points |
+
+How it was measured, and how to reproduce it: [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark). The full results and their limits are in [What we measured](#what-we-measured).
 
 ## What you need
 
@@ -129,6 +140,8 @@ The engine is in `engine/`: `antechamber_recall.py` (fusion and the adapter regi
 - LongMemEval answering used 60 + 28 questions, not all 500.
 - Judge: Grok, not GPT-4o; LoCoMo judged with LongMemEval's general prompt; F1 reported alongside.
 - "Not mentioned" (trick) questions: every reader answers instead of abstaining (0–30%), memory or not.
+
+**Method and reproduction:** [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark).
 
 **Benchmark data licences.** LoCoMo: CC BY-NC 4.0 (cite, do not redistribute its text commercially). LongMemEval: MIT. Neither dataset is included in this repo.
 
