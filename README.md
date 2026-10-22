@@ -19,7 +19,7 @@ Recall on two public long-memory benchmarks, on every question the method never 
 | LoCoMo | 1,493 | 56.7% | **78.9%** | +22.2 points |
 | LongMemEval (S, cleaned) | 412 | 62.6% | **77.7%** | +15.0 points |
 
-Most of the lead comes from returning the lines around each match. Given the same surrounding lines, standard search still trails, by 6.9 points on LoCoMo and 5.1 on LongMemEval at equal text.
+Most of the lead comes from returning the lines around each match. Given the same surrounding lines, standard search still trails: by 6.9 points on LoCoMo (where it was handed less text, about 4,700 characters against 8,300) and by 5.1 on LongMemEval at equal text (about 25,000 characters each).
 
 How it was measured, and how to reproduce it: [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark). The full results and their limits are in [What we measured](#what-we-measured).
 
