@@ -8,6 +8,8 @@ Antechamber is recall for your AI. One question in: every store you point it at 
 
 On two public long-memory benchmarks it finds the evidence needed to answer far more often than standard vector search (see Benchmarks). There is no language model inside recall: local embeddings, keyword shelves, fusion.
 
+It hands your AI the moments that matter, not whole transcripts: about 2,000–6,000 tokens per question, so it works with any model, small or large. Its biggest measured gain is on a small local model.
+
 ## Benchmarks
 
 Recall on two public long-memory benchmarks, on every question the method never saw. "Found" = every evidence line for the question is among what recall hands the reader.
@@ -16,6 +18,8 @@ Recall on two public long-memory benchmarks, on every question the method never 
 |---|---|---|---|---|
 | LoCoMo | 1,493 | 56.7% | **78.9%** | +22.2 points |
 | LongMemEval (S, cleaned) | 412 | 62.6% | **77.7%** | +15.0 points |
+
+Most of the lead comes from returning the lines around each match. Given the same surrounding lines, standard search still trails, by 6.9 points on LoCoMo and 5.1 on LongMemEval at equal text.
 
 How it was measured, and how to reproduce it: [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark). The full results and their limits are in [What we measured](#what-we-measured).
 
