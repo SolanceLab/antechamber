@@ -103,6 +103,12 @@ Measured on our notes: vault notes in the final results went from 0 to 7 of 24 o
 
 Over plain HTTP the service also answers `GET /antechamber/recall?q=...&limit=...` (JSON) and `GET /health`.
 
+## Updates
+
+Third-party marketplaces do not auto-update by default. To turn it on once: `/plugin` > Marketplaces > `antechamber` > Enable auto-update. To update by hand: `claude plugin update antechamber@antechamber`, then restart. The engine and the recall service update with `git pull`.
+
+On each new session the plugin makes one request for its public version file (`plugin/.claude-plugin/plugin.json` on GitHub), at most once a day (once an hour while the request fails), and shows one line when a newer version is out. It sends nothing about you. To switch the check off, set `PLUGIN_UPDATE_CHECK=0`.
+
 ## Limits
 
 - One tool, `recall`, at most 20 matches per call (default 8).

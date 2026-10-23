@@ -1,0 +1,17 @@
+{
+  "description": "Says in one line, at most once a day, when a newer version of this plugin is out. Off with PLUGIN_UPDATE_CHECK=0.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "command -v python3 >/dev/null 2>&1 && python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/update_check.py\" https://raw.githubusercontent.com/SolanceLab/antechamber/main/plugin/.claude-plugin/plugin.json antechamber || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
