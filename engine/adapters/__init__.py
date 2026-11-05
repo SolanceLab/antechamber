@@ -38,6 +38,10 @@ Config shape (TOML):
     folder = "~/Documents/Vault"
     vault_map = "~/tools/vault-map.py"
 
+    [[adapters.codemap]]           # a code map written by Graphify (see codemap.py)
+    id = "code"
+    graph = "~/.cache/codemap/graph.json"
+
     [[adapters.pgvector]]
     id = "papers"
     dsn_env = "PAPERS_DSN"
@@ -63,12 +67,12 @@ log = logging.getLogger("antechamber.adapters")
 
 
 def load(cfg, embedder=None):
-    """Every configured public adapter -> shelves, in config order by kind (notes, chats, memories, service, vaultmap, pgvector).
+    """Every configured public adapter -> shelves, in config order by kind (notes, chats, memories, service, vaultmap, codemap, pgvector).
     The pgvector module (and psycopg) is only imported when a pgvector adapter is configured."""
-    from . import notes, chats, service, memories, vaultmap
+    from . import notes, chats, service, memories, vaultmap, codemap
     a = (cfg or {}).get("adapters") or {}
     out = (notes.from_config(cfg, embedder) + chats.from_config(cfg, embedder) + memories.from_config(cfg, embedder)
-           + service.from_config(cfg) + vaultmap.from_config(cfg))
+           + service.from_config(cfg) + vaultmap.from_config(cfg) + codemap.from_config(cfg))
     if a.get("pgvector"):
         from . import pgvector
         out += pgvector.from_config(cfg, embedder)

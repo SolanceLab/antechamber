@@ -222,6 +222,47 @@ def make_reader(root, max_file_bytes, strict=False):
     return read
 
 
+def make_open_note(root, pattern, max_bytes, split=None):
+    """id -> the whole note's text, for the MCP open_item tool. The id is a passage id ('relative/path.md#hash',
+    or '...#hash-<n>' for a repeated passage); only the path part is used. `split` (vault-map ids, 'path#section')
+    yields the candidate paths of an id instead. A caller path that is absolute, climbs out ('..'), is hidden, or does not match the
+    shelf's glob is refused; the file is opened by open_below (no link followed, regular files only).
+    Raises ValueError when the id cannot be opened."""
+    opener = make_opener(root)
+    rx = glob_regex(pattern)
+    real_root = os.path.realpath(root)
+
+    def open_rel(rel):
+        parts = rel.split("/")
+        if (not rel or "\x00" in rel or "\\" in rel or rel.startswith("/")
+                or any(x in ("", ".", "..") or x.startswith(".") for x in parts) or not rx.match(rel)):
+            raise ValueError("not an openable id")
+        try:
+            f = opener(os.path.join(real_root, *parts))
+        except OSError:
+            raise ValueError("not found")
+        with f:
+            raw = f.read(max_bytes + 1)
+        if len(raw) > max_bytes or b"\x00" in raw[:8192]:
+            raise ValueError("not readable")
+        return raw.decode("utf-8-sig", errors="replace")
+
+    def open_note(item_id):
+        item_id = str(item_id)
+        if split is not None:
+            for rel in split(item_id):   # a file name may hold '#': try each split, first one that opens wins
+                try:
+                    return open_rel(rel)
+                except ValueError:
+                    pass
+            raise ValueError("not an openable id")
+        rel, sep, digest = item_id.rpartition("#")   # split from the right: a file name may hold '#'
+        if not sep or not re.fullmatch(r"[0-9a-f]{12}(-\d+)?", digest):
+            raise ValueError("not an openable id")
+        return open_rel(rel)
+    return open_note
+
+
 def resolve(base_dir, p):
     p = os.path.expanduser(p)
     return os.path.realpath(p if os.path.isabs(p) else os.path.join(base_dir, p))
@@ -254,7 +295,9 @@ def from_config(cfg, embedder=None):
         index = ix.Index(ix.index_path(cfg, iid, base), fp, embedder, lambda r=root, p=pattern, m=mfb: scan(r, p, m),
                          make_reader(root, mfb, strict=True), max_passages=fp["max_passages"],
                          opener=make_opener(root), max_bytes=mfb)
-        shelves.append(ix.local_shelf(iid, index, embedder, lambda r, i=iid, n=name: ix.row_item(i, r, n),
-                                      int(inst.get("limit", 20))))
+        shelf = ix.local_shelf(iid, index, embedder, lambda r, i=iid, n=name: ix.row_item(i, r, n),
+                               int(inst.get("limit", 20)))
+        shelf.open = make_open_note(root, pattern, mfb)   # read only by the MCP open_item tool
+        shelves.append(shelf)
     return shelves
 

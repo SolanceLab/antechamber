@@ -138,10 +138,13 @@ class Registry(unittest.TestCase):
         import sys, types
         m = types.ModuleType("fake_adapters_mod")
         m.SHELVES = [FnShelf("z", lambda c: [], "tst")]
-        with mock.patch.dict(sys.modules, {"fake_adapters_mod": m}), mock.patch.dict(A.SHELVES, {}, clear=True):
-            self.assertEqual(A.load_configured(["fake_adapters_mod:SHELVES"]), ["z"])
+        # Hermetic since 5 Nov: with no cfg, load_configured() reads this machine's settings file. Its [[adapters.vaultmap]] id="vaultsec" (22 Oct, DECISIONS vault-seats-confirmed) and [[adapters.codemap]] id="code" (7b86959) then hit the 98c5cad guard against a public id that is already a registered kind, because SHELVES is cleared here. So the test passes its own empty cfg and isolates PUBLIC_SHELVES / KINDS.
+        no_public = {"_config_dir": "/nonexistent"}
+        with mock.patch.dict(sys.modules, {"fake_adapters_mod": m}), mock.patch.dict(A.SHELVES, {}, clear=True), \
+             mock.patch.dict(A.KINDS), mock.patch.object(A, "PUBLIC_SHELVES", []):
+            self.assertEqual(A.load_configured(["fake_adapters_mod:SHELVES"], cfg=no_public), ["z"])
         with self.assertRaises(ImportError):
-            A.load_configured(["no_such_adapters_module:SHELVES"])
+            A.load_configured(["no_such_adapters_module:SHELVES"], cfg=no_public)
 
 
 class MovedNames(unittest.TestCase):

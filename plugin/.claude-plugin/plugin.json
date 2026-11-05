@@ -1,8 +1,10 @@
 {
   "name": "antechamber",
-  "description": "Antechamber: one question searches every store you connect (notes, chats, memories, a vault) and returns only the best matches.",
-  "version": "1.0.0",
-  "author": { "name": "House of Solance" },
+  "description": "Antechamber on your own computer: one question searches every store you connect (notes, chats, memories, a vault, code) and returns only the best matches.",
+  "version": "1.1.0",
+  "author": {
+    "name": "House of Solance"
+  },
   "license": "PolyForm-Noncommercial-1.0.0",
   "userConfig": {
     "server_url": {
@@ -23,7 +25,9 @@
     "antechamber": {
       "type": "http",
       "url": "${user_config.server_url}",
-      "headers": { "Authorization": "Bearer ${user_config.api_key}" }
+      "headers": {
+        "Authorization": "Bearer ${user_config.api_key}"
+      }
     }
   }
 }

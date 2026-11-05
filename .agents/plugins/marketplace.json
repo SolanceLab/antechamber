@@ -1,0 +1,12 @@
+{
+  "name": "antechamber",
+  "interface": {"displayName": "Antechamber"},
+  "plugins": [
+    {
+      "name": "antechamber",
+      "source": "./plugin",
+      "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
+      "category": "Productivity"
+    }
+  ]
+}

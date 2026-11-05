@@ -5,18 +5,20 @@
 GET /antechamber/recall?q=...&limit=...   one call, every default shelf searched, winners only
 GET /health                              ok (settings loaded, adapters installed, every extension loaded) + config
 Everything else comes from extensions named in the settings file ([service] extensions = ["module:fn"]); each
-is called with this module at startup and adds routes (add_get, add_post) and hooks (add_hook).
+is called with this module at startup and adds routes (add_get, add_post, add_verb) and hooks (add_hook).
 Public adapters' indexes refresh in the background (start_refresher), never inside a recall."""
 import json, sys, urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import config as C   # machine settings (~/.config/antechamber/config.toml), never in code
 import antechamber_recall
+import remote_access
 
 LIVE_CHRONO=False    # True when an extension hands the CHRONO ordering to its caller: answers then say order=chrono
 
 # ---- the generic recall service: routes, hooks, extensions
 GET_ROUTES, POST_ROUTES = {}, {}
 EXTENSIONS_LOADED = []
+VERB_ROUTES = {}   # (method, path) -> fn(handler) for PUT/DELETE/PATCH; unregistered pairs keep the stdlib 501
 HOOKS = {"before_recall": [], "after_recall": [], "on_error": [], "health_extra": []}
 
 def add_get(path, fn):
@@ -26,6 +28,16 @@ def add_get(path, fn):
 def add_post(path, fn):
     """fn(handler) answers POST path."""
     POST_ROUTES[path] = fn
+
+def add_verb(method, path, fn):
+    """fn(handler) answers method on path; POST goes to POST_ROUTES, PUT/DELETE/PATCH to VERB_ROUTES."""
+    m = method.upper()
+    if m == "POST":
+        POST_ROUTES[path] = fn
+    elif m in ("PUT", "DELETE", "PATCH"):
+        VERB_ROUTES[(m, path)] = fn
+    else:
+        raise ValueError(m)
 
 def add_hook(name, fn):
     """before_recall(q) -> (early answer or None, extra keys); after_recall(q, out); on_error(q, e) -> (code, obj);
@@ -97,6 +109,9 @@ LOCAL_HOSTS = {"127.0.0.1", "localhost", "[::1]", "::1"}
 
 
 def local_request(h):
+    h.remote_identity = None                     # set only by remote_access.admit, for a verified Access request
+    if remote_access.is_remote(h):               # the one opt-in public host: /mcp only, with a valid Access JWT
+        return remote_access.admit(h, urllib.parse.urlparse(getattr(h, "path", "") or "").path, getattr(h, "command", ""))
     allowed = LOCAL_HOSTS | {str(x).lower() for x in (C.get("service", "allowed_hosts", []) or [])}
     hdrs = getattr(h, "headers", None) or {}     # a real request always has headers; in-process callers may not
     host = (hdrs.get("Host") or "").strip().lower()
@@ -112,6 +127,7 @@ def local_request(h):
 
 
 class H(BaseHTTPRequestHandler):
+    remote_identity = None
     def log_message(self,*a): pass
     def do_POST(self):
         if not local_request(self): return self._send(403,{"error":"not a local request"})
@@ -124,6 +140,12 @@ class H(BaseHTTPRequestHandler):
         fn=GET_ROUTES.get(u.path)
         if fn is None: return self._send(404,{"error":"not found"})
         return fn(self, qs)
+    def _other(self):
+        fn=VERB_ROUTES.get((self.command, urllib.parse.urlparse(self.path).path))
+        if fn is None: return self.send_error(501, "Unsupported method (%r)" % self.command)
+        if not local_request(self): return self._send(403,{"error":"not a local request"})
+        return fn(self)
+    do_PUT = do_DELETE = do_PATCH = _other
     def _send(self,code,obj):
         b=json.dumps(obj).encode(); self.send_response(code)
         self.send_header("Content-Type","application/json"); self.send_header("Content-Length",str(len(b)))

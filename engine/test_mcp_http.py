@@ -6,6 +6,7 @@ import threading
 import unittest
 import urllib.request
 import urllib.error
+from unittest import mock
 
 import antechamber_recall
 import recall_service as R
@@ -52,7 +53,10 @@ class McpHttp(unittest.TestCase):
 
     def test_off_without_key(self):
         os.environ.pop("ANTECHAMBER_MCP_KEY")
-        code, _ = post(self.port, {"jsonrpc": "2.0", "id": 1, "method": "ping"}, key="anything")
+        # Hermetic since 5 Nov: mcp_http.key() falls back to [mcp] key in this machine's settings file (set 5 Nov), so the test drops that section for the call.
+        with mock.patch.dict(M.C._d):
+            M.C._d.pop("mcp", None)
+            code, _ = post(self.port, {"jsonrpc": "2.0", "id": 1, "method": "ping"}, key="anything")
         self.assertEqual(code, 503)
 
     def test_wrong_or_missing_key(self):
@@ -65,7 +69,7 @@ class McpHttp(unittest.TestCase):
         self.assertEqual(code, 200)
         self.assertEqual(r["result"]["protocolVersion"], "2025-06-18")
         code, r = post(self.port, {"jsonrpc": "2.0", "id": 2, "method": "tools/list"}, key="k1")
-        self.assertEqual([t["name"] for t in r["result"]["tools"]], ["recall"])
+        self.assertEqual([t["name"] for t in r["result"]["tools"]], ["recall", "search_store", "open_item"])
 
     def test_notification_gets_202(self):
         code, r = post(self.port, {"jsonrpc": "2.0", "method": "notifications/initialized"}, key="k1")

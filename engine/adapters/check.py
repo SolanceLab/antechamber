@@ -15,7 +15,7 @@ from .chats import FORMATS
 from .pgvector import validate as pg_validate
 
 KNOWN_TOP = {"embedder", "index", "adapters", "_config_dir"}
-KINDS = ("notes", "chats", "memories", "service", "pgvector", "vaultmap")
+KINDS = ("notes", "chats", "memories", "service", "pgvector", "vaultmap", "codemap")
 
 
 def load_config(path):
@@ -44,7 +44,7 @@ def check(cfg):
     insts = [(k, i) for k in KINDS for i in (adapters.get(k) or [])]
     if not insts:
         probs.append("no adapters configured: add at least one [[adapters.notes]], [[adapters.chats]], "
-                     "[[adapters.service]], [[adapters.pgvector]] or [[adapters.vaultmap]] table")
+                     "[[adapters.service]], [[adapters.pgvector]], [[adapters.vaultmap]] or [[adapters.codemap]] table")
 
     # ids: present, well-formed, unique across every adapter
     seen = {}
@@ -137,6 +137,11 @@ def check(cfg):
                 probs.append(f"{where}: vault_map (the path to vault-map.py) is missing")
             elif not os.path.isfile(_path(base, inst["vault_map"])):
                 probs.append(f"{where}: vault_map {_path(base, inst['vault_map'])} is not a file")
+        elif k == "codemap":
+            if not inst.get("graph"):
+                probs.append(f"{where}: graph (the path to Graphify's graph.json) is missing")
+            elif not os.path.isfile(_path(base, inst["graph"])):
+                probs.append(f"{where}: graph {_path(base, inst['graph'])} is not a file")
         elif k == "pgvector":
             probs += pg_validate(inst)
             if inst.get("dsn_env") and not os.environ.get(inst["dsn_env"]):

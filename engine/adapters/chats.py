@@ -242,6 +242,29 @@ def make_to_item(iid, name, index):
     return to_item
 
 
+OPEN_STOP = 25_000   # stop reading a thread past this many characters; the MCP tool cuts at 20000
+
+
+def make_open(index):
+    """id -> the whole conversation that message belongs to, as 'sender: text' lines (MCP open_item)."""
+    def open_thread(item_id):
+        rows = index.rows([str(item_id)])
+        if not rows or rows[0].get("thread") is None:
+            raise ValueError("not found")
+        lines, size, pos = [], 0, 0
+        while size <= OPEN_STOP:   # page through the thread and stop once the caller's cap is passed (bounded memory)
+            page = index.window(rows[0]["thread"], pos, 0, 199)
+            if not page:
+                break
+            for m in page:
+                line = f'[{m.get("sender") or "?"}]: {m.get("text") or ""}'
+                lines.append(line)
+                size += len(line) + 1
+            pos += 200
+        return (rows[0].get("title") or "Conversation") + "\n\n" + "\n".join(lines)
+    return open_thread
+
+
 def from_config(cfg, embedder=None):
     """[[adapters.chats]] tables -> one shelf each. `embedder` overrides the [embedder] table (tests, demos)."""
     insts = ((cfg or {}).get("adapters") or {}).get("chats") or []
@@ -267,5 +290,7 @@ def from_config(cfg, embedder=None):
         index = ix.Index(ix.index_path(cfg, iid, base), fp, embedder, lambda p=path, m=mx: scan(p, m),
                          make_reader(fmt, mx), max_passages=int(inst.get("max_passages", 2_000_000)), max_bytes=mx,
                          opener=open_nofollow)
-        shelves.append(ix.local_shelf(iid, index, embedder, make_to_item(iid, name, index), int(inst.get("limit", 20))))
+        shelf = ix.local_shelf(iid, index, embedder, make_to_item(iid, name, index), int(inst.get("limit", 20)))
+        shelf.open = make_open(index)   # read only by the MCP open_item tool
+        shelves.append(shelf)
     return shelves

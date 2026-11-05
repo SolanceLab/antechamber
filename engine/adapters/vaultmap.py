@@ -18,6 +18,9 @@ best sentence window (about 150 characters); with an older vault-map, its whole-
 are used. The section index lives in vault-map's own cache (~/.cache/vault-map) and is refreshed in the
 background, never inside a recall. vault-map is read once from the configured file; when a sha256 is given, the
 same bytes that were checked are the ones run.
+
+The shelf also carries vault_folder, vault_map and vault_map_sha256, so an add-on can open whole notes from the
+same folder with the same vault-map.
 """
 import hashlib
 import logging
@@ -62,6 +65,12 @@ class SectionIndex:
     def current(self):
         with self.lock:
             return self.ix
+
+
+def split_vault_id(item_id):
+    """A vault item id is '<path>#<section>', and a file name may itself hold '#'. Candidate paths, LONGEST first,
+    so 'a.md#b.md#Sec' tries 'a.md#b.md' before 'a.md' (Codex review, 5 Nov: shortest-first opened the wrong note)."""
+    return [item_id[:p] for p in range(len(item_id) - 1, -1, -1) if item_id[p] == "#"]
 
 
 def to_items(results, iid, name):
@@ -119,6 +128,12 @@ def from_config(cfg, embedder=None):
             return to_items(hits[:limit], iid, name)
 
         shelf = FnShelf(iid, search, iid, "id")
+        shelf.vault_folder = folder   # read by add-ons that open a whole note; recall never uses it
+        shelf.vault_map = vm   # read by add-ons that open a whole note; recall never uses it
+        shelf.vault_map_sha256 = str(inst.get("vault_map_sha256") or "").lower()   # read by add-ons that open a whole note; recall never uses it
+        from .notes import make_open_note
+        shelf.open = make_open_note(
+            folder, "**/*.md", 2_000_000, split=split_vault_id)   # read only by the MCP open_item tool
         if idx is not None:
             shelf.index = idx
         shelves.append(shelf)

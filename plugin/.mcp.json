@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "antechamber": {
+      "url": "http://127.0.0.1:8790/mcp",
+      "bearer_token_env_var": "ANTECHAMBER_MCP_KEY"
+    }
+  }
+}

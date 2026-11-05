@@ -74,9 +74,24 @@ class VaultMapAdapter(unittest.TestCase):
         items = s.search(types.SimpleNamespace(q="backup rotation"))
         self.assertTrue(items and items[0]["metadata"]["path"] == "backups.md")
 
+    def test_shelf_carries_folder_and_engine_for_add_ons(self):
+        vm = os.path.join(self.tmp.name, "vm.py")
+        with open(vm, "w") as fh:
+            fh.write("def search(terms, folder, n):\n    return None\n")
+        with open(vm, "rb") as fh:
+            pin = hashlib.sha256(fh.read()).hexdigest()
+        def shelf(p):
+            return vaultmap.from_config({"adapters": {"vaultmap": [{"id": "vault", "folder": self.vault, "vault_map": vm,
+                                                                    "vault_map_sha256": p}]}})[0]
+        s = shelf(pin)
+        self.assertEqual((s.vault_folder, s.vault_map_sha256), (self.vault, pin))
+        self.assertTrue(callable(s.vault_map.search))
+        self.assertEqual(shelf("").vault_map_sha256, "")
+
     def test_missing_settings(self):
         with self.assertRaises(vaultmap.VaultMapError):
             vaultmap.from_config({"adapters": {"vaultmap": [{"id": "vault", "folder": self.vault}]}})
+
 
 
 if __name__ == "__main__":

@@ -238,6 +238,25 @@ def make_to_item(iid, name):
     return to_item
 
 
+def make_open(index):
+    """id -> the memory's full text plus the conversation lines it points at (MCP open_item)."""
+    def open_memory(item_id):
+        rows = index.rows([str(item_id)])
+        if not rows:
+            raise ValueError("not found")
+        try:
+            meta = json.loads(rows[0].get("metadata") or "{}")
+        except ValueError:
+            meta = {}
+        out = [rows[0].get("text") or ""]
+        lines = meta.get("lines") or []
+        if lines:
+            out.append("Source lines:")
+            out += [f'[{ln.get("sender") or "?"}]: {ln.get("message") or ""}' for ln in lines]
+        return "\n".join(out)
+    return open_memory
+
+
 def from_config(cfg, embedder=None):
     """[[adapters.memories]] tables -> one shelf each. `embedder` overrides the [embedder] table (tests, demos)."""
     insts = ((cfg or {}).get("adapters") or {}).get("memories") or []
@@ -268,6 +287,7 @@ def from_config(cfg, embedder=None):
                             make_reader(export, mex), max_passages=int(inst.get("max_passages", 5000)),
                             max_bytes=mx, opener=open_nofollow, export_path=export)
         shelf = ix.local_shelf(iid, index, embedder, make_to_item(iid, name), int(inst.get("limit", 20)))
+        shelf.open = make_open(index)   # read only by the MCP open_item tool
         shelf.redundant_with = list(red)   # declared for seating; recall does not act on it yet
         shelves.append(shelf)
     return shelves

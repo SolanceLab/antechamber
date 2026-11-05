@@ -7,7 +7,7 @@ numbers once, the rest is ranking arithmetic.
 Shelves are adapters (shelves/contract.py), each returning its own top-pool, best first. Which adapters exist
 is decided by the settings file ([shelves] adapters), loaded when this module is imported; tests and harnesses
 can install their own with install().
-The [[adapters.*]] tables (notes folders, chat exports, services, pgvector: engine/adapters/) are installed
+The [[adapters.*]] tables (notes folders, chat exports, memories, services, pgvector, a vault-map vault, a Graphify code map: engine/adapters/) are installed
 after the [shelves] adapters; `python3 antechamber_recall.py --check [config]` validates them without
 connecting to anything.
 
@@ -76,7 +76,7 @@ _env_seats = os.environ.get("ANTECHAMBER_EXTRA_SEATS")
 EXTRA_SEATS = (int(_env_seats) if _env_seats else 0) if _env_seats is not None else int(C.get("recall", "extra_seats", 3))
 EXTRA_SEATS = EXTRA_SEATS if EXTRA_SEAT_NS else 0
 SHELVES = {}
-PUBLIC_KINDS = ("notes", "chats", "memories", "service", "pgvector", "vaultmap")   # = adapters/check.py KINDS
+PUBLIC_KINDS = ("notes", "chats", "memories", "service", "pgvector", "vaultmap", "codemap")   # = adapters/check.py KINDS
 
 
 def install(adapters):
@@ -101,7 +101,7 @@ def _import_root():
 
 def load_configured(specs=None, cfg=None, embedder=None):
     """Install the adapters the settings file names: first every [shelves] adapters entry ("module:attr" -> an
-    ordered list of Shelf), then the public adapters of its [[adapters.notes|chats|memories|service|pgvector]] tables, in
+    ordered list of Shelf), then the public adapters of its [[adapters.notes|chats|memories|service|pgvector|vaultmap|codemap]] tables, in
     config order. `cfg` (default: the settings file, C.raw()) and `embedder` (default: its [embedder] table) are
     for tests and demos. The public set is replaced as a whole on every call: built and validated first, then
     swapped in. An import error or a bad adapter setting raises: a recall service without its shelves must
@@ -197,7 +197,7 @@ CHRONO = os.environ.get("ANTECHAMBER_CHRONO") == "on"
 WIDE_N = int(os.environ.get("ANTECHAMBER_WIDE_N", "16"))
 
 
-def recall(q, db=None, n=N_DEFAULT, shelves=None, windows=True, links=None):
+def recall(q, db=None, n=N_DEFAULT, shelves=None, windows=True, links=None, solo=False):
     """Return {"query", "winners": [...], "shelves": {name: pool_size}, "failed": [names]}.
 
     Each winner is written out by the renderer registered for its kind (register_kind); an unregistered kind
@@ -205,6 +205,7 @@ def recall(q, db=None, n=N_DEFAULT, shelves=None, windows=True, links=None):
     a hit with its surrounding context). Contract the engine relies on: a dated winner carries an ISO `date`
     (it gains `day`), and a {"kind":"message"} winner carries `lines` [{"message", ...}] (DATES notes them).
     `links` (default: ANTECHAMBER_LINKS=on) runs the shelves seeded by another shelf's results.
+    `solo` searches exactly the shelves named: no riding shelves, no linked shelves (the MCP search_store tool).
     `"degraded": [ids]` appears only when a public adapter answered by words only.
     """
     db = db or C.PG_DB
@@ -215,7 +216,7 @@ def recall(q, db=None, n=N_DEFAULT, shelves=None, windows=True, links=None):
     q = clean_query(q)                    # instructions to the assistant and laughter are not what to find
     shelves = tuple(default_shelves() if shelves is None else shelves)
     for s, a in SHELVES.items():          # shelves that ride along with one being searched
-        if a.rides_with and a.rides_with in shelves and s not in shelves and a.active():
+        if not solo and a.rides_with and a.rides_with in shelves and s not in shelves and a.active():
             shelves += (s,)
     with ThreadPoolExecutor(len(shelves) + 1) as ex:
         # One bounded embed, started alongside the shelves that don't need it. Shelves that need the
@@ -241,7 +242,9 @@ def recall(q, db=None, n=N_DEFAULT, shelves=None, windows=True, links=None):
         failed = [f"{s}_stale" if s in stale_names else s for s in failed]
     if failed and not any(pools.values()):
         raise AllShelvesFailed(",".join(failed))
-    if links is None:
+    if solo:
+        links = False
+    elif links is None:
         links = os.environ.get("ANTECHAMBER_LINKS") == "on"
     if links:
         for s, a in SHELVES.items():      # shelves that start from another shelf's results

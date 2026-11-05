@@ -1,0 +1,89 @@
+{
+  "directed": true,
+  "nodes": [
+    {
+      "id": "billing_invoice_build_invoice",
+      "label": "build_invoice()",
+      "norm_label": "build_invoice()",
+      "source_file": "billing/invoice.py",
+      "source_location": "L12",
+      "file_type": "code",
+      "_callable": true
+    },
+    {
+      "id": "billing_invoice_add_line",
+      "label": "add_line()",
+      "norm_label": "add_line()",
+      "source_file": "billing/invoice.py",
+      "source_location": "L40",
+      "file_type": "code",
+      "_callable": true
+    },
+    {
+      "id": "billing_tax_compute_tax",
+      "label": "compute_tax()",
+      "norm_label": "compute_tax()",
+      "source_file": "billing/tax.py",
+      "source_location": "L5",
+      "file_type": "code",
+      "_callable": true
+    },
+    {
+      "id": "billing_send_send_invoice",
+      "label": "send_invoice()",
+      "norm_label": "send_invoice()",
+      "source_file": "billing/send.py",
+      "source_location": "L8",
+      "file_type": "code",
+      "_callable": true
+    },
+    {
+      "id": "billing_invoice",
+      "label": "invoice.py",
+      "norm_label": "invoice.py",
+      "source_file": "billing/invoice.py",
+      "source_location": "L1",
+      "file_type": "code",
+      "_callable": false
+    },
+    {
+      "id": "garden_water_plants",
+      "label": "water_plants()",
+      "norm_label": "water_plants()",
+      "source_file": "garden/water.py",
+      "source_location": "L3",
+      "file_type": "code",
+      "_callable": true
+    }
+  ],
+  "links": [
+    {
+      "source": "billing_invoice_build_invoice",
+      "target": "billing_invoice_add_line",
+      "relation": "calls",
+      "source_file": "billing/invoice.py",
+      "source_location": "L1"
+    },
+    {
+      "source": "billing_invoice_build_invoice",
+      "target": "billing_tax_compute_tax",
+      "relation": "calls",
+      "source_file": "billing/invoice.py",
+      "source_location": "L1"
+    },
+    {
+      "source": "billing_send_send_invoice",
+      "target": "billing_invoice_build_invoice",
+      "relation": "calls",
+      "source_file": "billing/send.py",
+      "source_location": "L1"
+    },
+    {
+      "source": "billing_invoice",
+      "target": "billing_invoice_build_invoice",
+      "relation": "contains",
+      "source_file": "billing/invoice.py",
+      "source_location": "L1"
+    }
+  ]
+}

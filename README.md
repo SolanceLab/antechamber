@@ -4,7 +4,7 @@ Made by House of Solance · free for noncommercial use · credit required
 
 ## What it is
 
-Antechamber is recall for your AI. One question in: every store you point it at (notes, chat exports, written memories, an Obsidian vault, a search service, a pgvector table) is searched at once, and only the best matches come back, dated, with their source and the lines around them.
+Antechamber is recall for your AI. One question in: every store you point it at (notes, chat exports, written memories, an Obsidian vault, a code map, a search service, a pgvector table) is searched at once, and only the best matches come back, dated, with their source and the lines around them.
 
 On two public long-memory benchmarks it finds the evidence needed to answer far more often than standard vector search (see Benchmarks). There is no language model inside recall: local embeddings, keyword shelves, fusion.
 
@@ -30,6 +30,7 @@ Next benchmark: LongMemEval-M (about 500 conversations per question), recall onl
 - Python 3.11 or newer, on macOS or Linux. The engine uses the standard library only.
 - Optional: an embedding model, either a local Ollama (for example `nomic-embed-text`) or any OpenAI-compatible endpoint. Without one, notes and chats are searched by words only.
 - Optional: `psycopg`, only if you connect a pgvector table.
+- Optional: [Graphify](https://github.com/Graphify-Labs/graphify), only to build a code map for the `codemap` store (Antechamber only reads its `graph.json`).
 - Optional: [vault-map](https://github.com/SolanceLab/vault-map), only if you connect an Obsidian vault.
 
 Antechamber runs on your own computer. The service listens on 127.0.0.1 only, and your stores never leave your machine unless you point the embedder at a remote endpoint and allow it out loud (`allow_remote_data = true`).
@@ -67,14 +68,51 @@ When the plugin asks, give it the server address `http://127.0.0.1:8790/mcp` (yo
 
 Antechamber answers any MCP client running on the same computer, with the key.
 
-- **Codex:** keep the key in an environment variable (here `ANTECHAMBER_MCP_KEY`, for example exported in your shell profile), then:
+- **Codex (plugin):** keep the key in an environment variable named `ANTECHAMBER_MCP_KEY` (for example exported in your shell profile), then add this repo as a plugin marketplace and install the plugin. In the Codex app: Plugins, Add, Add a marketplace, source `SolanceLab/antechamber`. From the command line:
 
   ```
-  codex mcp add antechamber --url http://127.0.0.1:8790/mcp --bearer-token-env-var ANTECHAMBER_MCP_KEY
+  codex plugin marketplace add SolanceLab/antechamber
+  codex plugin add antechamber@antechamber
   ```
 
+  Codex has no settings prompt, so the plugin points at `http://127.0.0.1:8790/mcp`. If you changed the port, add it by hand instead: `codex mcp add antechamber --url http://127.0.0.1:<port>/mcp --bearer-token-env-var ANTECHAMBER_MCP_KEY`.
 - **Any other MCP client:** an HTTP MCP server at `http://127.0.0.1:8790/mcp`, with the header `Authorization: Bearer <your key>`.
-- **claude.ai (web and mobile) is not supported in this version.** It runs in the cloud, and Antechamber only answers requests from your own computer, so a tunnel is refused too. Use Claude Code or Codex.
+
+### Use it from claude.ai or ChatGPT (remote door)
+
+Cloud apps cannot reach your computer, so Antechamber can open one door to the internet, locked by a sign-in. It stays closed until you set it up. You need a domain on Cloudflare (a free plan works) and `cloudflared` installed.
+
+1. **A tunnel to your computer.** `cloudflared tunnel create antechamber`, then `cloudflared tunnel route dns antechamber antechamber.example.com`, and run it with a config that sends only `/mcp` to Antechamber:
+
+   ```yaml
+   tunnel: <tunnel id>
+   credentials-file: /path/to/<tunnel id>.json
+   ingress:
+     - hostname: antechamber.example.com
+       path: ^/mcp$
+       service: http://127.0.0.1:8790
+       originRequest:
+         httpHostHeader: antechamber.example.com
+     - service: http_status:404
+   ```
+
+2. **A sign-in in front of it.** In Cloudflare Zero Trust: add the **One-time PIN** login method, then add a **Self-hosted application** for `antechamber.example.com` with one **Allow** policy for your own email. In the application's advanced settings turn on **Managed OAuth** with dynamic client registration, and allow these return addresses: `https://claude.ai/api/mcp/auth_callback`, `https://claude.com/api/mcp/auth_callback`, plus "any localhost" and "any loopback" (the ChatGPT desktop app signs in through your own computer). Copy the application's **AUD tag**.
+3. **Tell Antechamber about the door** in your settings file, then restart it:
+
+   ```toml
+   [remote]
+   host = "antechamber.example.com"                    # exactly the tunnel's hostname
+   access_team = "https://<your-team>.cloudflareaccess.com"
+   access_aud = "<the application's AUD tag>"
+   ```
+
+   On that host Antechamber answers only `POST /mcp`, and only with a valid Cloudflare sign-in pass, whose signature it checks itself. Everything else stays local, and local use still needs your key.
+4. **Connect the app.**
+   - **claude.ai:** Settings, Connectors, Add custom connector, address `https://antechamber.example.com/mcp`. Leave the OAuth fields empty; it detects the sign-in.
+   - **ChatGPT desktop:** Plugins, Add, Add MCP server, type Streamable HTTP, the same address, no token or headers.
+   - Sign in with the email from step 2 and type the code it sends you promptly; a slow sign-in can expire. The sign-in lasts 24 hours.
+
+Tested on 5 November 2026 with claude.ai and the ChatGPT desktop app. Grok's custom connectors use the same kind of sign-in but have not been tested.
 
 ## Settings
 
@@ -94,7 +132,7 @@ The service reads one settings file: `~/.config/antechamber/config.toml`, or whe
 | `[embedder]` | `backend` (`ollama` or `openai`), `url`, `model`, `dims`; `api_key_env` names an environment variable, never the key |
 | `[index]` | `dir` for the local search indexes; `refresh_minutes` (default 15) |
 | `[recall]` | `extra_seat_shelves`, `extra_seats` (default 3): reserved seats, below |
-| `[[adapters.*]]` | one table per store: `notes`, `chats`, `memories`, `vaultmap`, `service`, `pgvector` |
+| `[[adapters.*]]` | one table per store: `notes`, `chats`, `memories`, `vaultmap`, `codemap`, `service`, `pgvector` (`codemap` reads a code map written by [Graphify](https://github.com/Graphify-Labs/graphify) with `graphify extract <dir> --code-only`: `graph = "path/to/graph.json"`) |
 
 Each adapter's file in `engine/adapters/` documents its full table. Ids are lower-case letters, digits, `-` or `_`, and never change once chosen.
 
@@ -113,6 +151,8 @@ Measured on our notes: vault notes in the final results went from 0 to 7 of 24 o
 | Tool | What it does |
 |---|---|
 | `recall` | One question in plain words; the best matches from every connected store come back as text: date, source, title or section, then the passage or the conversation lines around the hit. `limit` 1–20, default 8. |
+| `search_store` | The same search, limited to one connected store, named by its `id`. |
+| `open_item` | One item's full text (up to 20,000 characters), from a store that can open items: notes, chats, memories, a vault. |
 
 Over plain HTTP the service also answers `GET /antechamber/recall?q=...&limit=...` (JSON) and `GET /health`.
 

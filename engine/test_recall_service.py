@@ -9,7 +9,7 @@ import recall_service as R
 def call(method, path, routes=None):
     import io
     h = R.H.__new__(R.H)
-    h.path = path
+    h.path, h.command = path, method.upper()
     h.headers, h.rfile = {"Content-Length": "0"}, io.BytesIO(b"")
     out = {}
     h._send = lambda code, obj: out.update(code=code, obj=obj)
@@ -20,7 +20,7 @@ def call(method, path, routes=None):
 def clean():
     """An engine service with only its own two routes and no hooks (whatever this machine's settings loaded)."""
     return mock.patch.multiple(R, GET_ROUTES={"/antechamber/recall": R.route_recall, "/health": R.route_health},
-                               POST_ROUTES={}, HOOKS={"before_recall": [], "after_recall": [], "on_error": [], "health_extra": []},
+                               POST_ROUTES={}, VERB_ROUTES={}, HOOKS={"before_recall": [], "after_recall": [], "on_error": [], "health_extra": []},
                                LIVE_CHRONO=False)
 
 
@@ -40,6 +40,18 @@ class Routes(unittest.TestCase):
             R.add_post("/y", lambda h: h._send(201, {}))
             self.assertEqual(call("GET", "/x?a=1"), {"code": 200, "obj": {"x": ["1"]}})
             self.assertEqual(call("POST", "/y")["code"], 201)
+
+
+    def test_add_verb_dispatches_put_delete_patch_and_post(self):
+        with clean():
+            seen = []
+            for m in ("PUT", "DELETE", "PATCH", "POST"):
+                R.add_verb(m, "/x", lambda h, m=m: (seen.append(m), h._send(200, {}))[1])
+            for m in ("PUT", "DELETE", "PATCH", "POST"):
+                self.assertEqual(call(m, "/x")["code"], 200)
+            self.assertEqual(seen, ["PUT", "DELETE", "PATCH", "POST"])
+            with self.assertRaises(ValueError):
+                R.add_verb("GET", "/x", lambda h: None)
 
 
 class Recall(unittest.TestCase):
@@ -81,9 +93,13 @@ class Recall(unittest.TestCase):
 
 class Health(unittest.TestCase):
     def test_ok_needs_settings_adapters_and_every_extension(self):
+        # Hermetic since 5 Nov: /health also needs public_ready() (98c5cad), and this machine's settings now install unrefreshed public shelves (vaultsec 22 Oct, code 7b86959), so PUBLIC_SHELVES/REFRESHED are pinned here.
         with clean(), mock.patch.object(R.C, "LOADED", True), mock.patch.dict(R.antechamber_recall.SHELVES, {"a": object()}, clear=True), \
-             mock.patch.object(R.C, "SERVICE_EXTENSIONS", []), mock.patch.object(R, "EXTENSIONS_LOADED", []):
+             mock.patch.object(R.C, "SERVICE_EXTENSIONS", []), mock.patch.object(R, "EXTENSIONS_LOADED", []), \
+             mock.patch.object(R.antechamber_recall, "PUBLIC_SHELVES", []), mock.patch.object(R, "REFRESHED", set()):
             self.assertIs(call("GET", "/health")["obj"]["ok"], True)
+            with mock.patch.object(R.antechamber_recall, "PUBLIC_SHELVES", [types.SimpleNamespace(name="p", index=object())]):
+                self.assertIs(call("GET", "/health")["obj"]["ok"], False)   # an unrefreshed public index keeps /health not-ok
             with mock.patch.object(R.C, "SERVICE_EXTENSIONS", ["missing:register"]):
                 self.assertIs(call("GET", "/health")["obj"]["ok"], False)
             with mock.patch.dict(R.antechamber_recall.SHELVES, {}, clear=True):

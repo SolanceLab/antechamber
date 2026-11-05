@@ -111,6 +111,8 @@ def render_item(it, rctx=None):
         covered.add(own)
     w = {"kind": KIND, "source": it.get("source"), "date": it.get("date"), "title": it.get("title"),
          "section": it.get("section"), "text": (it.get("text") or "")[:RENDER_CAP]}
+    if it.get("id") is not None and it.get("_ns"):
+        w["store"], w["id"] = it["_ns"], str(it["id"])   # what the MCP open_item tool needs, shown beside the result
     if lines:
         w["lines"] = [{"sender": ln.get("sender"), "message": (ln.get("message") or "")[:LINE_CAP],
                        "hit": bool(ln.get("hit"))} for ln in lines]
