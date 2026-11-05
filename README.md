@@ -59,9 +59,22 @@ claude plugin marketplace add SolanceLab/antechamber
 claude plugin install antechamber@antechamber
 ```
 
-Once the presence-app set launches, you will also be able to install it there with `claude plugin install antechamber@presence-app`.
+It is also in the presence-app set: `claude plugin marketplace add SolanceLab/presence-app`, then `claude plugin install antechamber@presence-app`.
 
 When the plugin asks, give it the server address `http://127.0.0.1:8790/mcp` (your port, if you changed it) and the key you set in `[mcp] key`.
+
+### Connect other assistants
+
+Antechamber answers any MCP client running on the same computer, with the key.
+
+- **Codex:** keep the key in an environment variable (here `ANTECHAMBER_MCP_KEY`, for example exported in your shell profile), then:
+
+  ```
+  codex mcp add antechamber --url http://127.0.0.1:8790/mcp --bearer-token-env-var ANTECHAMBER_MCP_KEY
+  ```
+
+- **Any other MCP client:** an HTTP MCP server at `http://127.0.0.1:8790/mcp`, with the header `Authorization: Bearer <your key>`.
+- **claude.ai (web and mobile) is not supported in this version.** It runs in the cloud, and Antechamber only answers requests from your own computer, so a tunnel is refused too. Use Claude Code or Codex.
 
 ## Settings
 
