@@ -164,8 +164,8 @@ On each new session the plugin makes one request for its public version file (`p
 
 ## Limits
 
-- One tool, `recall`, at most 20 matches per call (default 8).
-- The service listens on 127.0.0.1 only and refuses requests whose Host or Origin is not local (extra names can be listed in `[service] allowed_hosts`). To reach it from another machine you need your own tunnel or proxy.
+- Three tools: `recall` and `search_store` return at most 20 matches per call (default 8); `open_item` returns at most 20,000 characters.
+- The service listens on 127.0.0.1 only and refuses requests whose Host or Origin is not local (extra names can be listed in `[service] allowed_hosts`). The one exception is the opt-in remote door (see "Use it from claude.ai or ChatGPT"): one named host, `POST /mcp` only, with a valid Cloudflare sign-in pass.
 - MCP is off until a key is set; every request needs `Authorization: Bearer <key>`. Request bodies above 1 MB are refused.
 - Notes files above 2,000,000 bytes and chat exports above 500,000,000 bytes are skipped (logged).
 - A search service adapter accepts answers of at most 1 MB, 50 items, 4,000 characters per item.
