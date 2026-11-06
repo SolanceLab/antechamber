@@ -55,9 +55,9 @@ You need [uv](https://docs.astral.sh/uv/) (`curl -LsSf https://astral.sh/uv/inst
   codex plugin add antechamber@antechamber
   ```
 
-Then ask anything. The first time, the assistant asks which folders to search (notes, chat exports, memories) and sets Antechamber up for you: no service to start, no key, no settings file to write. Your folders stay on your computer.
+Then ask anything. The first time, the assistant asks where you keep notes and whether you have Claude or ChatGPT chat exports, looks at what is there, and sets Antechamber up for you (it offers an Obsidian vault or a memories folder only if you have one): no service to start, no key, no settings file to write. Your folders stay on your computer. Setup works once: after that the assistant cannot change which folders are searched, and later changes are made by editing the settings file (`~/.config/antechamber/config.toml`). Only folders inside your home folder are accepted, never the home folder itself or private ones such as `.ssh` or `.config`.
 
-This is for assistants that run on your own computer. claude.ai cannot run local programs: use the remote door below.
+The code map is an advanced add-on, set up by hand (see the settings table below). This is for assistants that run on your own computer. claude.ai cannot run local programs: use the remote door below.
 
 ### Advanced: the HTTP service
 

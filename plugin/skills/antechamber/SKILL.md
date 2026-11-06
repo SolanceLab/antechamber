@@ -9,11 +9,13 @@ description: Use when the answer may already be written down in the user's own s
 
 When `recall` answers "Antechamber has no stores yet", set it up now, in this conversation:
 
-1. Ask the user which folders to search: notes (a folder of Markdown or text files), chats (a Claude or ChatGPT export file or folder), memories (a folder of memory files). Ask for full paths.
-2. Call `setup_stores` with `stores: [{kind, path, name?, format?}]`. Leave `embedder` out (words-only search) unless the user says Ollama runs on their computer; then `embedder: "ollama"` adds search by meaning.
-3. Repeat the user's original question with `recall`. No restart is needed.
+1. Ask two plain questions: "Where do you keep notes?" and "Do you have chat exports from Claude or ChatGPT?" Ask for full paths.
+2. Call `look_for_stores` with the paths the user gave. It only looks, on this computer: it counts files and peeks at the start of a few JSON files to tell the kind, and reports only the kind, never text. At most 20 paths.
+3. Offer a better option only when it fits: if it reports an `obsidian vault`, offer kind `vault`; if it reports `scriptorium memories`, offer kind `memories`. Otherwise stay with `notes` and `chats` (`format: "claude"` or `"chatgpt"`), and say nothing of vaults, memories or code maps.
+4. Call `setup_stores` with `stores: [{kind, path, name?, format?}]`. Leave `embedder` out (words-only search) unless the user says Ollama runs on their computer; then `embedder: "ollama"` adds search by meaning. If the answer says a vault was set up as plain notes, pass that on.
+5. Repeat the user's original question with `recall`. No restart is needed.
 
-Once stores exist, `setup_stores` needs `overwrite: true` to change them (a `.bak` copy of the old settings is kept). Say plainly what it set up and where the settings file is.
+`setup_stores` and `look_for_stores` work only until stores exist. After that they are gone and a call is refused: later changes are made by the person editing the settings file, not by you, so tell them where it is instead of retrying. Folders outside the home folder, the home folder itself, and private ones (.ssh, .gnupg, .aws, .config, Library/Keychains and similar) are refused: ask for a different folder. Say plainly what it set up and where the settings file is.
 
 ## Reach for `recall`
 

@@ -34,7 +34,7 @@ class Stdio(unittest.TestCase):
         self.tmp.cleanup()
 
     def run_server(self, msgs, module=("mcp_stdio.py",)):
-        env = dict(os.environ, ANTECHAMBER_CONFIG=self.cfg, HOME=self.t)
+        env = dict(os.environ, ANTECHAMBER_CONFIG=self.cfg, HOME=self.t, ANTECHAMBER_HOME_ROOT=self.t)
         p = subprocess.run([sys.executable, os.path.join(ENGINE, *module)], input="\n".join(json.dumps(m) for m in msgs) + "\n",
                            capture_output=True, text=True, env=env, timeout=60)
         lines = p.stdout.splitlines()
@@ -59,7 +59,7 @@ class Stdio(unittest.TestCase):
         self.assertIn("no stores yet", self.text(a[3]))
         self.assertIn("Antechamber is set up", self.text(a[4]))
         self.assertIn("zebra backups", self.text(a[5]))
-        self.assertTrue(a[6]["result"].get("isError"))                     # no overwrite without overwrite=true
+        self.assertTrue(a[6]["result"].get("isError"))                     # configured: the assistant cannot change stores
         self.assertEqual(stat.S_IMODE(os.stat(self.cfg).st_mode), 0o600)
 
     def test_refuses_bad_paths_and_writes_nothing(self):
@@ -70,14 +70,35 @@ class Stdio(unittest.TestCase):
             self.assertTrue(a[i]["result"].get("isError"))
         self.assertFalse(os.path.exists(self.cfg))
 
-    def test_overwrite_keeps_a_backup_and_stores_survive_restart(self):
+    def test_configured_hides_setup_tools_and_refuses_calls(self):
         self.run_server([call(1, "setup_stores", stores=[{"kind": "notes", "path": self.notes}])])
         other = os.path.join(self.t, "more")
         os.makedirs(other)
-        a = self.run_server([call(1, "setup_stores", overwrite=True, stores=[{"kind": "notes", "path": other}]),
+        a = self.run_server([rpc(1, "tools/list"),
+                             call(2, "setup_stores", stores=[{"kind": "notes", "path": other}]),
+                             call(3, "look_for_stores", paths=[other]),
+                             call(4, "recall", query="zebra")])
+        names = [t["name"] for t in a[1]["result"]["tools"]]
+        self.assertNotIn("setup_stores", names)
+        self.assertNotIn("look_for_stores", names)
+        for i in (2, 3):
+            self.assertTrue(a[i]["result"].get("isError"))
+            self.assertIn("editing the settings file", self.text(a[i]))
+            self.assertIn(self.cfg, self.text(a[i]))
+        self.assertNotIn("overwrite", self.text(a[2]))
+        self.assertNotIn("no stores yet", self.text(a[4]))
+        with open(self.cfg) as f:
+            self.assertNotIn("more", f.read())                             # the refused call changed nothing
+
+    def test_unconfigured_existing_file_is_replaced_with_a_backup(self):
+        os.makedirs(os.path.dirname(self.cfg))
+        with open(self.cfg, "w") as f:
+            f.write('[embedder]\nbackend = "none"\n')
+        a = self.run_server([call(1, "setup_stores", stores=[{"kind": "notes", "path": self.notes}]),
                              call(2, "recall", query="zebra")])
         self.assertIn("Antechamber is set up", self.text(a[1]))
-        self.assertTrue(os.path.exists(self.cfg + ".bak"))
+        with open(self.cfg + ".bak") as f:
+            self.assertIn("[embedder]", f.read())
         b = self.run_server([call(1, "recall", query="zebra")])             # a fresh start reads the file
         self.assertNotIn("no stores yet", self.text(b[1]))
 

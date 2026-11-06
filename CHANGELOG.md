@@ -3,7 +3,8 @@
 ## 1.2.0
 
 - **Plug and play.** Installing the plugin in Claude Code or Codex is enough: the app starts Antechamber itself (MCP over stdio, run with `uvx`), so there is no service to start, no key and no port. The only prerequisite is `uv`.
-- **First-run setup.** With no stores configured, `recall` says so and the new `setup_stores` tool lets the assistant ask which folders to search, write the settings file (mode 0600) and load them at once. It never overwrites existing settings without `overwrite=true`.
+- **First-run setup.** With no stores configured, `recall` says so and the new `setup_stores` tool lets the assistant ask which folders to search, write the settings file (mode 0600) and load them at once. The tool works only until stores exist: once the settings name stores, `setup_stores` and `look_for_stores` leave the tool list and a call is refused, so the assistant cannot repoint Antechamber. Later changes are made by editing the settings file. A settings file with no stores yet may be replaced (a `.bak` copy is kept).
+- **Folder rules.** Setup and `look_for_stores` accept only folders inside your home folder (or `ANTECHAMBER_HOME_ROOT`), after following links. They refuse the home folder itself and private folders such as `.ssh`, `.gnupg`, `.aws`, `.config`, `Library/Keychains` and `Library/Application Support`.
 - `pip`/`uvx` packaging: `antechamber-mcp` console script.
 - The HTTP service and the remote door are unchanged; claude.ai cannot run local programs, so it keeps using the remote door.
 

@@ -2,7 +2,7 @@
 """Antechamber's MCP server over stdio: the app starts it, so there is no service, key or port to set up.
 
 One JSON-RPC message per line on stdin, one answer per line on stdout; logs go to stderr only. The tools are
-mcp_http's (recall, search_store, open_item) plus setup_stores for the first run. Stores load from the
+mcp_http's (recall, search_store, open_item) plus setup_stores and look_for_stores, offered only until stores are set. Stores load from the
 settings file at start; their indexes refresh in a background thread, never inside a call.
 Standard library only."""
 import json
@@ -22,11 +22,13 @@ def handle(msg):
     if isinstance(msg, dict) and msg.get("jsonrpc") == "2.0" and msg.get("id") is not None:
         method, params = msg.get("method"), msg.get("params") or {}
         if method == "tools/list":
-            return mcp_http._result(msg["id"], {"tools": mcp_http.TOOLS + [S.TOOL]})
+            setup = [] if S.configured() else [S.TOOL, S.LOOK_TOOL]      # once set up, the assistant cannot change stores
+            return mcp_http._result(msg["id"], {"tools": mcp_http.TOOLS + setup})
         if method == "tools/call" and isinstance(params, dict):
             name = params.get("name")
-            if name == "setup_stores":
-                return mcp_http._result(msg["id"], S.setup_stores(params.get("arguments") or {}))
+            if name in ("setup_stores", "look_for_stores"):      # both refuse themselves once the settings name stores
+                fn = S.setup_stores if name == "setup_stores" else S.look_for_stores
+                return mcp_http._result(msg["id"], fn(params.get("arguments") or {}))
             if name in HOLD and not S.configured():
                 return mcp_http._result(msg["id"], mcp_http._text(S.NO_STORES))
     return mcp_http.handle(msg, remote=False)
