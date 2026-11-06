@@ -5,13 +5,13 @@
   },
   "metadata": {
     "description": "Antechamber: recall for your AI, over every store you connect.",
-    "version": "1.1.0"
+    "version": "1.2.0"
   },
   "plugins": [
     {
       "name": "antechamber",
-      "description": "On your own computer: one question searches every store you connect (notes, chats, memories, a vault, code) and returns only the best matches. Needs your server address and key.",
-      "version": "1.1.0",
+      "description": "On your own computer: one question searches the folders you choose (notes, chats, memories) and returns only the best matches. Installs and starts itself; needs only uv.",
+      "version": "1.2.0",
       "author": {
         "name": "House of Solance"
       },

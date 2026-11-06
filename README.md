@@ -37,6 +37,32 @@ Antechamber runs on your own computer. The service listens on 127.0.0.1 only, an
 
 ## Install
 
+### Quick start
+
+You need [uv](https://docs.astral.sh/uv/) (`curl -LsSf https://astral.sh/uv/install.sh | sh`). It fetches Python and Antechamber itself.
+
+- **Claude Code:**
+
+  ```
+  claude plugin marketplace add SolanceLab/antechamber
+  claude plugin install antechamber@antechamber
+  ```
+
+- **Codex:**
+
+  ```
+  codex plugin marketplace add SolanceLab/antechamber
+  codex plugin add antechamber@antechamber
+  ```
+
+Then ask anything. The first time, the assistant asks which folders to search (notes, chat exports, memories) and sets Antechamber up for you: no service to start, no key, no settings file to write. Your folders stay on your computer.
+
+This is for assistants that run on your own computer. claude.ai cannot run local programs: use the remote door below.
+
+### Advanced: the HTTP service
+
+For several clients at once, a key, or the remote door, run the service yourself.
+
 1. Get the code and make your settings file:
 
 ```
@@ -53,29 +79,13 @@ python3 engine/antechamber_recall.py --check
 python3 engine/recall_service.py
 ```
 
-3. Install the plugin in Claude Code from this repo's own marketplace:
-
-```
-claude plugin marketplace add SolanceLab/antechamber
-claude plugin install antechamber@antechamber
-```
-
-It is also in the presence-app set: `claude plugin marketplace add SolanceLab/presence-app`, then `claude plugin install antechamber@presence-app`.
-
-When the plugin asks, give it the server address `http://127.0.0.1:8790/mcp` (your port, if you changed it) and the key you set in `[mcp] key`.
+3. Connect any MCP client to the service (below). The plugin from the Quick start does not use the service; it runs its own copy.
 
 ### Connect other assistants
 
-Antechamber answers any MCP client running on the same computer, with the key.
+The HTTP service answers any MCP client running on the same computer, with the key.
 
-- **Codex (plugin):** keep the key in an environment variable named `ANTECHAMBER_MCP_KEY` (for example exported in your shell profile), then add this repo as a plugin marketplace and install the plugin. In the Codex app: Plugins, Add, Add a marketplace, source `SolanceLab/antechamber`. From the command line:
-
-  ```
-  codex plugin marketplace add SolanceLab/antechamber
-  codex plugin add antechamber@antechamber
-  ```
-
-  Codex has no settings prompt, so the plugin points at `http://127.0.0.1:8790/mcp`. If you changed the port, add it by hand instead: `codex mcp add antechamber --url http://127.0.0.1:<port>/mcp --bearer-token-env-var ANTECHAMBER_MCP_KEY`.
+- **Codex:** `codex mcp add antechamber --url http://127.0.0.1:8790/mcp --bearer-token-env-var ANTECHAMBER_MCP_KEY` (keep the key in that environment variable).
 - **Any other MCP client:** an HTTP MCP server at `http://127.0.0.1:8790/mcp`, with the header `Authorization: Bearer <your key>`.
 
 ### Use it from claude.ai or ChatGPT (remote door)

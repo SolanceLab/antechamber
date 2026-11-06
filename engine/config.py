@@ -15,6 +15,16 @@ if os.path.exists(PATH):
         _d = tomllib.load(f)
 
 
+def reload():
+    """Read the settings file again (setup_stores wrote it): what get() and raw() answer changes, nothing else."""
+    global LOADED
+    _d.clear()
+    if os.path.exists(PATH):
+        with open(PATH, "rb") as f:
+            _d.update(tomllib.load(f))
+    LOADED = bool(_d)
+
+
 def get(section, key, default=None):
     """One setting from the file: [section] key, or `default`. Extensions read their own sections with this."""
     return (_d.get(section) or {}).get(key, default)

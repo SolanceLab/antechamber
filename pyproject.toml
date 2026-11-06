@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "antechamber"
+version = "1.2.0"
+description = "Antechamber: one question searches every store you connect and returns only the best matches (MCP over stdio)."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+license = { file = "LICENSE.md" }   # PolyForm Noncommercial 1.0.0
+
+[project.scripts]
+antechamber-mcp = "antechamber_launch:main"
+
+[tool.setuptools]
+packages = ["antechamber_launch", "antechamber_launch._engine", "antechamber_launch._engine.adapters", "antechamber_launch._engine.shelves"]
+
+[tool.setuptools.package-dir]
+"antechamber_launch._engine" = "engine"

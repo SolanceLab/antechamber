@@ -1,8 +1,12 @@
 {
   "mcpServers": {
     "antechamber": {
-      "url": "http://127.0.0.1:8790/mcp",
-      "bearer_token_env_var": "ANTECHAMBER_MCP_KEY"
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/SolanceLab/antechamber@v1.2.0",
+        "antechamber-mcp"
+      ]
     }
   }
 }

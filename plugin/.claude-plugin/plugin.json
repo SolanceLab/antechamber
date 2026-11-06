@@ -1,33 +1,19 @@
 {
   "name": "antechamber",
-  "description": "Antechamber on your own computer: one question searches every store you connect (notes, chats, memories, a vault, code) and returns only the best matches.",
-  "version": "1.1.0",
+  "description": "Antechamber on your own computer: one question searches the folders you choose (notes, chats, memories) and returns only the best matches. Nothing to start or configure: ask, and it sets itself up.",
+  "version": "1.2.0",
   "author": {
     "name": "House of Solance"
   },
   "license": "PolyForm-Noncommercial-1.0.0",
-  "userConfig": {
-    "server_url": {
-      "type": "string",
-      "title": "Server address",
-      "description": "Where your Antechamber server answers, e.g. http://127.0.0.1:8790/mcp",
-      "required": true
-    },
-    "api_key": {
-      "type": "string",
-      "title": "Key",
-      "description": "The key your Antechamber server expects ([mcp] key or ANTECHAMBER_MCP_KEY).",
-      "required": true,
-      "sensitive": true
-    }
-  },
   "mcpServers": {
     "antechamber": {
-      "type": "http",
-      "url": "${user_config.server_url}",
-      "headers": {
-        "Authorization": "Bearer ${user_config.api_key}"
-      }
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/SolanceLab/antechamber@v1.2.0",
+        "antechamber-mcp"
+      ]
     }
   }
 }
