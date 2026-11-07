@@ -18,7 +18,7 @@ USAGE = """usage: antechamber-mcp [--help] [--where]
 
 Antechamber's stdio MCP server: the app starts it, it speaks MCP on stdin and stdout.
 Settings file: ~/.config/antechamber/plugin.toml (or $ANTECHAMBER_CONFIG).
-A service settings file (config.toml) is never read by the plugin.
+The plugin never picks up a service settings file (config.toml) on its own; only an $ANTECHAMBER_CONFIG you set points it elsewhere.
   --where   print the bundled engine folder
   -h, --help  show this text"""
 
