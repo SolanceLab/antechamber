@@ -241,7 +241,7 @@ def setup_stores(args):
         return _text("embedder must be none or ollama", True)
     if embedder == "ollama" and not _ollama_up():
         return _text("Ollama is not answering on http://localhost:11434; start it or use embedder=none.", True)
-    exists = os.path.exists(C.PATH) and os.path.getsize(C.PATH) > 0
+    exists = os.path.lexists(C.PATH)    # any existing file counts, a zero-byte one too
     if exists:
         # Only a file this tool wrote may be replaced (a .bak is kept). Any other file (a service settings file,
         # a hand-written one) is never touched: the person adds the store tables by hand.

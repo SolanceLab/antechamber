@@ -113,6 +113,15 @@ class Stdio(unittest.TestCase):
             self.assertEqual(f.read(), '[service]\nport = 8790\n')
         self.assertFalse(os.path.exists(self.cfg + ".bak"))
 
+    def test_a_zero_byte_settings_file_is_never_replaced(self):
+        os.makedirs(os.path.dirname(self.cfg))
+        open(self.cfg, "w").close()
+        a = self.run_server([call(1, "setup_stores", stores=[{"kind": "notes", "path": self.notes}])])
+        self.assertTrue(a[1]["result"].get("isError"))
+        self.assertIn("left as it is", self.text(a[1]))
+        self.assertEqual(os.path.getsize(self.cfg), 0)
+        self.assertFalse(os.path.exists(self.cfg + ".bak"))
+
     def test_launcher_finds_the_bundled_engine(self):
         p = subprocess.run([sys.executable, "-m", "antechamber_launch", "--where"], cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(p.returncode, 0, p.stderr)
