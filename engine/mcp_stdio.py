@@ -8,6 +8,10 @@ Standard library only."""
 import json
 import sys
 
+if __name__ == "__main__":        # run directly (python3 mcp_stdio.py): set the plugin environment before config is read
+    import stdio_env
+    stdio_env.apply()
+
 import config as C
 import antechamber_recall
 import mcp_http

@@ -92,6 +92,22 @@ class InstalledEntry(unittest.TestCase):
         with open(os.path.join(home, ".config", "antechamber", "config.toml")) as f:
             self.assertEqual(f.read(), SERVICE_CONFIG)      # the service file is left alone
 
+    def test_running_the_engine_file_directly_is_isolated_too(self):
+        home = self.home(SERVICE_CONFIG)
+        script = None
+        for root, _, files in os.walk(os.path.join(os.path.dirname(self.exe), os.pardir)):
+            if os.path.basename(root) == "_engine" and "mcp_stdio.py" in files:
+                script = os.path.join(root, "mcp_stdio.py")
+        self.assertTrue(script, "installed engine not found")
+        env = {"PATH": os.environ.get("PATH", ""), "HOME": home, "TMPDIR": self.tmp}
+        p = subprocess.run([os.path.join(os.path.dirname(self.exe), "python"), script], env=env,
+                           cwd=tempfile.mkdtemp(dir=self.tmp), capture_output=True, text=True, timeout=60,
+                           input="".join(json.dumps(m) + "\n" for m in [INIT, RECALL]))
+        out = [json.loads(line) for line in p.stdout.splitlines() if line.strip()]
+        self.assertIn("result", out[0], p.stderr)
+        self.assertIn("no stores yet", json.dumps(out[1]))
+        self.assertNotIn("ModuleNotFoundError", p.stderr)
+
     def test_empty_config_variable_counts_as_unset(self):
         home = self.home(SERVICE_CONFIG)
         p, out = self.run_exe(home, messages=[INIT, RECALL], config="")
