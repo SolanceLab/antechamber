@@ -150,7 +150,10 @@ def main():
         base["XDG_CONFIG_HOME"] = str(td / "xdg")
         base["XDG_CACHE_HOME"] = str(td / "cache")
         base["UV_CACHE_DIR"] = str(td / "uvcache")
-        base["ANTECHAMBER_CONFIG"] = str(td / "xdg" / "antechamber" / "config.toml")
+        # A service-style settings file naming modules this machine does not have: the plugin must not read it.
+        svc = home / ".config" / "antechamber"
+        svc.mkdir(parents=True)
+        (svc / "config.toml").write_text('[shelves]\nadapters = ["house.adapters:SHELVES"]\n\n[service]\nextensions = ["house.service:register"]\n', encoding="utf-8")
         base["PLUGIN_UPDATE_CHECK"] = "0"
 
         # ---- Claude Code ----
@@ -166,7 +169,7 @@ def main():
         installed = [p for p in installed if "marketplaces" not in p.parts or "plugin" in p.parts]
         cmd, args = server_from(installed)
         drive("claude", cmd, args, {**cenv}, sample)
-        shutil.rmtree(td / "xdg", ignore_errors=True)             # a fresh settings file for the Codex walk
+        (svc / "plugin.toml").unlink(missing_ok=True)              # a fresh plugin settings file for the Codex walk
 
         # ---- Codex ----
         xenv = {**base, "CODEX_HOME": str(td / "codex")}

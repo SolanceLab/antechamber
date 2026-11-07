@@ -24,7 +24,7 @@ Named here, never valued.
 
 | Name | What it is |
 |---|---|
-| `ANTECHAMBER_CONFIG` | Path of the settings file (default `~/.config/antechamber/config.toml`) |
+| `ANTECHAMBER_CONFIG` | Path of the settings file (default `~/.config/antechamber/config.toml`; the plugin's stdio server defaults to `~/.config/antechamber/plugin.toml`) |
 | `[mcp] key` or `ANTECHAMBER_MCP_KEY` | The bearer key for `POST /mcp` |
 | `[embedder] api_key_env` | Names the environment variable holding a remote embedder's key |
 | `[[adapters.service]] api_key_env` | Names the environment variable holding a search service's key |

@@ -16,6 +16,7 @@ import mcp_http
 
 NO_STORES = ("Antechamber has no stores yet. Ask the user which folders to search, "
              "then call setup_stores.")
+MARKER = "# Written by Antechamber setup_stores."
 SECTION = {"vault": "vaultmap"}      # the settings section a kind is written under (default: the kind itself)
 VAULT_MAP_VERSION = "1.3.1"
 KINDS = ("notes", "chats", "memories", "vault")
@@ -240,7 +241,18 @@ def setup_stores(args):
         return _text("embedder must be none or ollama", True)
     if embedder == "ollama" and not _ollama_up():
         return _text("Ollama is not answering on http://localhost:11434; start it or use embedder=none.", True)
-    exists = os.path.exists(C.PATH) and os.path.getsize(C.PATH) > 0     # an unconfigured file (no stores) may be replaced
+    exists = os.path.exists(C.PATH) and os.path.getsize(C.PATH) > 0
+    if exists:
+        # Only a file this tool wrote may be replaced (a .bak is kept). Any other file (a service settings file,
+        # a hand-written one) is never touched: the person adds the store tables by hand.
+        try:
+            with open(C.PATH, encoding="utf-8") as f:
+                ours = f.readline().startswith(MARKER)
+        except (OSError, UnicodeDecodeError):
+            ours = False
+        if not ours:
+            return _text(f"The settings file {C.PATH} was not written by setup_stores, so it is left as it is. "
+                         "The person can add a [[adapters.notes]] table to it by hand, or delete it and run setup again.", True)
     stores, vault_note = _vaults_or_notes(stores)
     os.makedirs(os.path.dirname(C.PATH), exist_ok=True)
     if exists:

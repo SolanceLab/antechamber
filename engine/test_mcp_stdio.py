@@ -93,7 +93,7 @@ class Stdio(unittest.TestCase):
     def test_unconfigured_existing_file_is_replaced_with_a_backup(self):
         os.makedirs(os.path.dirname(self.cfg))
         with open(self.cfg, "w") as f:
-            f.write('[embedder]\nbackend = "none"\n')
+            f.write('# Written by Antechamber setup_stores. Edit by hand.\n[embedder]\nbackend = "none"\n')
         a = self.run_server([call(1, "setup_stores", stores=[{"kind": "notes", "path": self.notes}]),
                              call(2, "recall", query="zebra")])
         self.assertIn("Antechamber is set up", self.text(a[1]))
@@ -101,6 +101,17 @@ class Stdio(unittest.TestCase):
             self.assertIn("[embedder]", f.read())
         b = self.run_server([call(1, "recall", query="zebra")])             # a fresh start reads the file
         self.assertNotIn("no stores yet", self.text(b[1]))
+
+    def test_a_settings_file_setup_did_not_write_is_never_replaced(self):
+        os.makedirs(os.path.dirname(self.cfg))
+        with open(self.cfg, "w") as f:
+            f.write('[service]\nport = 8790\n')
+        a = self.run_server([call(1, "setup_stores", stores=[{"kind": "notes", "path": self.notes}])])
+        self.assertTrue(a[1]["result"].get("isError"))
+        self.assertIn("left as it is", self.text(a[1]))
+        with open(self.cfg) as f:
+            self.assertEqual(f.read(), '[service]\nport = 8790\n')
+        self.assertFalse(os.path.exists(self.cfg + ".bak"))
 
     def test_launcher_finds_the_bundled_engine(self):
         p = subprocess.run([sys.executable, "-m", "antechamber_launch", "--where"], cwd=ROOT, capture_output=True, text=True)

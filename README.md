@@ -55,7 +55,7 @@ You need [uv](https://docs.astral.sh/uv/) (`curl -LsSf https://astral.sh/uv/inst
   codex plugin add antechamber@antechamber
   ```
 
-Then ask anything. The first time, the assistant asks where you keep notes and whether you have Claude or ChatGPT chat exports, looks at what is there, and sets Antechamber up for you (it offers an Obsidian vault or a memories folder only if you have one): no service to start, no key, no settings file to write. Your folders stay on your computer. Setup works once: after that the assistant cannot change which folders are searched, and later changes are made by editing the settings file (`~/.config/antechamber/config.toml`). Only folders inside your home folder are accepted, never the home folder itself or private ones such as `.ssh` or `.config`.
+Then ask anything. The first time, the assistant asks where you keep notes and whether you have Claude or ChatGPT chat exports, looks at what is there, and sets Antechamber up for you (it offers an Obsidian vault or a memories folder only if you have one): no service to start, no key, no settings file to write. Your folders stay on your computer. Setup works once: after that the assistant cannot change which folders are searched, and later changes are made by editing the plugin's settings file (`~/.config/antechamber/plugin.toml`). The plugin keeps its own file, so a service settings file (`config.toml`) is never read or overwritten by it, and service-only settings (`[shelves] adapters`, `[service] extensions`) are ignored in the plugin. Only folders inside your home folder are accepted, never the home folder itself or private ones such as `.ssh` or `.config`.
 
 The code map is an advanced add-on, set up by hand (see the settings table below). This is for assistants that run on your own computer. claude.ai cannot run local programs: use the remote door below.
 
@@ -133,7 +133,7 @@ The plugin asks for two:
 | Server address | Where your Antechamber server answers, e.g. `http://127.0.0.1:8790/mcp` |
 | Key | The key your server expects (`[mcp] key` or `ANTECHAMBER_MCP_KEY`) |
 
-The service reads one settings file: `~/.config/antechamber/config.toml`, or wherever `$ANTECHAMBER_CONFIG` points. Start from [antechamber.example.toml](antechamber.example.toml).
+The service reads one settings file: `~/.config/antechamber/config.toml` (the plugin uses `plugin.toml` beside it), or wherever `$ANTECHAMBER_CONFIG` points. Start from [antechamber.example.toml](antechamber.example.toml).
 
 | Section | What it sets |
 |---|---|

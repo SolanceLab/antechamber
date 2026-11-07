@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.1
+
+- **The plugin no longer crashes when a service settings file exists.** 1.2.0 read `~/.config/antechamber/config.toml` for the plugin too, so a person who also runs the HTTP service (whose settings name extra modules under `[shelves] adapters` and `[service] extensions`) got `ModuleNotFoundError` at start.
+- The plugin now keeps its own settings file, `~/.config/antechamber/plugin.toml`, so a service `config.toml` is never read or overwritten by it. `ANTECHAMBER_CONFIG` still wins when you set it. A `config.toml` that 1.2.0's setup wrote (it starts with the line "# Written by Antechamber setup_stores.") is still used when there is no `plugin.toml`, so an upgrade keeps your stores.
+- The plugin ignores service-only settings (`[shelves] adapters`, `[service] extensions`): it never imports them and prints one line to stderr saying so. The HTTP service is unchanged.
+- `setup_stores` replaces a settings file only if it wrote it; any other existing file is left untouched.
+- `antechamber-mcp --help` prints a short usage and exits without starting the engine.
+- New test `engine/test_installed_entry.py` installs the package into a clean virtual environment and runs the installed `antechamber-mcp`; the stranger test now keeps a service settings file in its home.
+
 ## 1.2.0
 
 - **Plug and play.** Installing the plugin in Claude Code or Codex is enough: the app starts Antechamber itself (MCP over stdio, run with `uvx`), so there is no service to start, no key and no port. The only prerequisite is `uv`.

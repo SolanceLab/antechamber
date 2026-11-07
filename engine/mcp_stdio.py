@@ -64,6 +64,8 @@ def serve(stdin=None, stdout=None):
 
 def main():
     print(f"antechamber stdio (config {C.PATH if C.LOADED else 'none yet'})", file=sys.stderr, flush=True)
+    if C.IGNORED_SERVICE_ONLY:
+        print(f"antechamber: {' and '.join(C.IGNORED_SERVICE_ONLY)} in {C.PATH} are ignored in the plugin.", file=sys.stderr, flush=True)
     S.start_refresher()
     serve()
 

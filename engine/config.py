@@ -1,7 +1,7 @@
 # Antechamber — Copyright (c) 2026 House of Solance. PolyForm Noncommercial 1.0.0. Required Notice: Copyright (c) 2026 House of Solance (https://github.com/SolanceLab)
 """Antechamber settings — one file per machine, never in git.
 
-Read from $ANTECHAMBER_CONFIG, else ~/.config/antechamber/config.toml. Every machine-specific value lives
+Read from $ANTECHAMBER_CONFIG, else ~/.config/antechamber/config.toml (the plugin's stdio server sets its own default, plugin.toml). Every machine-specific value lives
 there (database, embedder, service, and any section an extension reads with get()), so the engine's code names no machine, folder or user. A missing
 file leaves generic defaults and LOADED = False — the service reports itself unhealthy, so a deploy without its
 settings rolls back instead of running against the wrong database. Example: ../antechamber.example.toml."""
@@ -48,6 +48,13 @@ PG_HOST = _get("postgres", "host", "localhost")
 SHELF_ADAPTERS = list(_get("shelves", "adapters", []))           # each names an ordered list of Shelf
 SHELF_IMPORT_ROOT = _get("shelves", "import_root", "..")
 SERVICE_EXTENSIONS = list(_get("service", "extensions", []))     # each names a register(service) function
+# The plugin's stdio server (the launcher sets ANTECHAMBER_STDIO=1) stands alone: it never imports modules a settings
+# file names. IGNORED_SERVICE_ONLY lists what was named and skipped, so the server can say so once.
+STDIO = os.environ.get("ANTECHAMBER_STDIO") == "1"
+IGNORED_SERVICE_ONLY = []
+if STDIO:
+    IGNORED_SERVICE_ONLY = [k for k, v in (("[shelves] adapters", SHELF_ADAPTERS), ("[service] extensions", SERVICE_EXTENSIONS)) if v]
+    SHELF_ADAPTERS, SERVICE_EXTENSIONS = [], []
 INDEX_REFRESH_MINUTES = float(_get("index", "refresh_minutes", 15))   # public adapters' index refresh (recall_service)
 DIR = os.path.dirname(os.path.abspath(PATH))                    # the settings file's folder: relative paths in it resolve here
 
