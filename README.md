@@ -2,9 +2,17 @@
 
 Made by House of Solance · free for noncommercial use · credit required
 
+Imagine your AI's memory as a library. Every conversation, every note, every little thing you ever told it is a book on a shelf. The library grows every day.
+
+Now you ask a question. Your AI has to get up and walk the aisles. It pulls down book after book and flips through pages it doesn't need. It comes back late, arms full, and often holding the wrong one. Some books it never finds at all.
+
+Antechamber is the librarian at the desk. You ask once. The librarian does the walking, so your AI spends none of its tokens or context on the search. It goes to every shelf at the same time and comes back with just the few pages that matter, each one marked with where it was found and when it was written. Your AI reads those pages and answers you.
+
+The library stays yours. The librarian never writes in your books. It only finds.
+
 ## What it is
 
-Antechamber is recall for your AI. One question in: every store you point it at (notes, chat exports, written memories, an Obsidian vault, a code map, a search service, a pgvector table) is searched at once, and only the best matches come back, dated, with their source and the lines around them.
+Antechamber is recall for your AI. One question in: every shelf you point it at (notes, chat exports, written memories, an Obsidian vault, a code map, a search service, a pgvector table) is searched at once, and only the best matches come back, dated, with their source and the lines around them.
 
 On two public long-memory benchmarks it finds the evidence needed to answer far more often than standard vector search (see Benchmarks). There is no language model inside recall: local embeddings, keyword shelves, fusion.
 
