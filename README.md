@@ -2,6 +2,8 @@
 
 Made by House of Solance · free for noncommercial use · credit required
 
+Antechamber helps your AI remember: one question searches everything you have already saved and brings back only the moments that matter.
+
 <div align="center">
 
 📚
@@ -15,6 +17,30 @@ Made by House of Solance · free for noncommercial use · credit required
 *The library stays yours. The librarian never writes in your books. It only finds.*
 
 </div>
+
+<p align="center"><img src="docs/how-it-works.svg" width="900" alt="Your AI asks Antechamber once. Antechamber looks through every shelf you have (notes, chats, memories, vault), picks only the few pages that matter, and hands them back to your AI, each marked with where and when it came from. Without it, your AI would walk the aisles itself."></p>
+
+## Quick start
+
+You need [uv](https://docs.astral.sh/uv/) (`curl -LsSf https://astral.sh/uv/install.sh | sh`). It fetches Python and Antechamber itself.
+
+- **Claude Code:**
+
+  ```
+  claude plugin marketplace add SolanceLab/plugins
+  claude plugin install antechamber@solancelab
+  ```
+
+- **Codex:**
+
+  ```
+  codex plugin marketplace add SolanceLab/plugins
+  codex plugin add antechamber@solancelab
+  ```
+
+Then ask anything. The first time, the assistant asks where you keep notes and whether you have Claude or ChatGPT chat exports, looks at what is there, and sets Antechamber up for you (it offers an Obsidian vault or a memories folder only if you have one): no service to start, no key, no settings file to write. Your folders stay on your computer. Setup works once: after that the assistant cannot change which folders are searched, and later changes are made by editing the plugin's settings file (`~/.config/antechamber/plugin.toml`). The plugin keeps its own file, so it never picks up or overwrites a service settings file (`config.toml`) on its own (only an `ANTECHAMBER_CONFIG` you set yourself points it elsewhere), and service-only settings (`[shelves] adapters`, `[service] extensions`) are ignored in the plugin. Only folders inside your home folder are accepted, never the home folder itself or private ones such as `.ssh` or `.config`.
+
+The code map is an advanced add-on, set up by hand (see the settings table below). This is for assistants that run on your own computer. claude.ai cannot run local programs: use the remote door below.
 
 ## What it is
 
@@ -49,29 +75,7 @@ Next benchmark: LongMemEval-M (about 500 conversations per question), recall onl
 
 Antechamber runs on your own computer. The service listens on 127.0.0.1 only, and your stores never leave your machine unless you point the embedder at a remote endpoint and allow it out loud (`allow_remote_data = true`).
 
-## Install
-
-### Quick start
-
-You need [uv](https://docs.astral.sh/uv/) (`curl -LsSf https://astral.sh/uv/install.sh | sh`). It fetches Python and Antechamber itself.
-
-- **Claude Code:**
-
-  ```
-  claude plugin marketplace add SolanceLab/antechamber
-  claude plugin install antechamber@antechamber
-  ```
-
-- **Codex:**
-
-  ```
-  codex plugin marketplace add SolanceLab/antechamber
-  codex plugin add antechamber@antechamber
-  ```
-
-Then ask anything. The first time, the assistant asks where you keep notes and whether you have Claude or ChatGPT chat exports, looks at what is there, and sets Antechamber up for you (it offers an Obsidian vault or a memories folder only if you have one): no service to start, no key, no settings file to write. Your folders stay on your computer. Setup works once: after that the assistant cannot change which folders are searched, and later changes are made by editing the plugin's settings file (`~/.config/antechamber/plugin.toml`). The plugin keeps its own file, so it never picks up or overwrites a service settings file (`config.toml`) on its own (only an `ANTECHAMBER_CONFIG` you set yourself points it elsewhere), and service-only settings (`[shelves] adapters`, `[service] extensions`) are ignored in the plugin. Only folders inside your home folder are accepted, never the home folder itself or private ones such as `.ssh` or `.config`.
-
-The code map is an advanced add-on, set up by hand (see the settings table below). This is for assistants that run on your own computer. claude.ai cannot run local programs: use the remote door below.
+## More ways to run it
 
 ### Advanced: the HTTP service
 
