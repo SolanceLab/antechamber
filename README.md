@@ -20,9 +20,39 @@ Antechamber helps your AI remember: one question searches everything you have al
 
 <p align="center"><img src="docs/how-it-works.svg" width="900" alt="Your AI asks Antechamber once. Antechamber looks through every shelf you have (notes, chats, memories, vault), picks only the few pages that matter, and hands them back to your AI, each marked with where and when it came from. Without it, your AI would walk the aisles itself."></p>
 
+## Benchmarks
+
+**Standard search finds what you need about 60% of the time. Antechamber finds it 8 times out of 10.**
+
+Recall on two public long-memory benchmarks, on every question the method never saw. "Found" = every evidence line for the question is among what recall hands the reader.
+
+| Benchmark | Questions | Standard search | Antechamber | Gain |
+|---|---|---|---|---|
+| LoCoMo | 1,493 | 56.7% | **78.9%** | +22.2 points |
+| LongMemEval (S, cleaned) | 412 | 62.6% | **77.7%** | +15.0 points |
+
+Most of the lead comes from returning the lines around each match. Given the same surrounding lines, standard search still trails: by 6.9 points on LoCoMo (where it was handed less text, about 4,700 characters against 8,300) and by 5.1 on LongMemEval at equal text (about 25,000 characters each).
+
+How it was measured, and how to reproduce it: [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark). The full results and their limits are in [What we measured](#what-we-measured).
+
+Next benchmark: LongMemEval-M (about 500 conversations per question), recall only, planned and run slowly; see [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark).
+
 ## Quick start
 
-You need [uv](https://docs.astral.sh/uv/) (`curl -LsSf https://astral.sh/uv/install.sh | sh`). It fetches Python and Antechamber itself.
+**Let your AI do it.** Copy this and send it to Claude Code:
+
+```
+Please install Antechamber for me. If uv is not installed, install it first:
+curl -LsSf https://astral.sh/uv/install.sh | sh
+Then run:
+claude plugin marketplace add SolanceLab/plugins
+claude plugin install antechamber@solancelab
+Then guide me through the rest, step by step.
+```
+
+Using Codex? Send the same message with `codex plugin marketplace add SolanceLab/plugins` and `codex plugin add antechamber@solancelab`.
+
+**Or do it yourself.** You need [uv](https://docs.astral.sh/uv/) (`curl -LsSf https://astral.sh/uv/install.sh | sh`). It fetches Python and Antechamber itself.
 
 - **Claude Code:**
 
@@ -49,21 +79,6 @@ Antechamber is recall for your AI. One question in: every shelf you point it at 
 On two public long-memory benchmarks it finds the evidence needed to answer far more often than standard vector search (see Benchmarks). There is no language model inside recall: local embeddings, keyword shelves, fusion.
 
 It hands your AI the moments that matter, not whole transcripts: about 2,000–6,000 tokens per question, so it works with any model, small or large. Its biggest measured gain is on a small local model.
-
-## Benchmarks
-
-Recall on two public long-memory benchmarks, on every question the method never saw. "Found" = every evidence line for the question is among what recall hands the reader.
-
-| Benchmark | Questions | Standard search | Antechamber | Gain |
-|---|---|---|---|---|
-| LoCoMo | 1,493 | 56.7% | **78.9%** | +22.2 points |
-| LongMemEval (S, cleaned) | 412 | 62.6% | **77.7%** | +15.0 points |
-
-Most of the lead comes from returning the lines around each match. Given the same surrounding lines, standard search still trails: by 6.9 points on LoCoMo (where it was handed less text, about 4,700 characters against 8,300) and by 5.1 on LongMemEval at equal text (about 25,000 characters each).
-
-How it was measured, and how to reproduce it: [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark). The full results and their limits are in [What we measured](#what-we-measured).
-
-Next benchmark: LongMemEval-M (about 500 conversations per question), recall only, planned and run slowly; see [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark).
 
 ## What you need
 
