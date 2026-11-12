@@ -175,7 +175,7 @@ The service reads one settings file: `~/.config/antechamber/config.toml` (the pl
 | `[embedder]` | `backend` (`ollama` or `openai`), `url`, `model`, `dims`; `api_key_env` names an environment variable, never the key |
 | `[index]` | `dir` for the local search indexes; `refresh_minutes` (default 15) |
 | `[recall]` | `extra_seat_shelves`, `extra_seats` (default 3): reserved seats, below |
-| `[[adapters.*]]` | one table per store: `notes`, `chats`, `memories`, `vaultmap`, `codemap`, `service`, `pgvector` (`codemap` reads a code map written by [Graphify](https://github.com/Graphify-Labs/graphify) with `graphify extract <dir> --code-only`: `graph = "path/to/graph.json"`) |
+| `[[adapters.*]]` | one table per store: `notes`, `chats`, `memories`, `vaultmap`, `codemap`, `workmap`, `service`, `pgvector` (`codemap` reads a code map written by [Graphify](https://github.com/Graphify-Labs/graphify) with `graphify extract <dir> --code-only`: `graph = "path/to/graph.json"`; `workmap` reads the decisions, pipeline items, tasks and ships that [work-map](https://github.com/SolanceLab/work-map) indexes: `work_map = "path/to/work_map.py"`, `config = "path/to/work-map.json"`, optional `work_map_sha256`) |
 
 Each adapter's file in `engine/adapters/` documents its full table. Ids are lower-case letters, digits, `-` or `_`, and never change once chosen.
 

@@ -4,7 +4,7 @@
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/SolanceLab/antechamber@v1.2.1",
+        "git+https://github.com/SolanceLab/antechamber@v1.3.0",
         "antechamber-mcp"
       ]
     }

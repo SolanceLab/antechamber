@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+- Added the `workmap` shelf: decisions, pipeline items, tasks and ships from work-map, searched by keyword.
+
 ## 1.2.1
 
 - **The plugin no longer crashes when a service settings file exists.** 1.2.0 read `~/.config/antechamber/config.toml` for the plugin too, so a person who also runs the HTTP service (whose settings name extra modules under `[shelves] adapters` and `[service] extensions`) got `ModuleNotFoundError` at start.

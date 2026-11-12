@@ -49,6 +49,13 @@ folder = "~/notes"             # a folder of markdown notes (glob = "**/*.md" by
 # vault_map = "~/tools/vault-map.py"
 # vault_map_sha256 = ""        # optional: pin the exact vault-map release
 
+# [[adapters.workmap]]         # decisions, pipeline items, tasks and ships, searched through work-map
+# id = "work"
+# name = "My work"
+# work_map = "~/tools/work_map.py"
+# work_map_sha256 = ""         # optional: pin the exact work-map release
+# config = "~/.config/work-map/config.json"
+
 # [[adapters.service]]         # a store that searches itself, behind one HTTP endpoint
 # id = "wiki"
 # url = "https://search.example.org/recall"

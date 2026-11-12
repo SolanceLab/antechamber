@@ -76,7 +76,7 @@ _env_seats = os.environ.get("ANTECHAMBER_EXTRA_SEATS")
 EXTRA_SEATS = (int(_env_seats) if _env_seats else 0) if _env_seats is not None else int(C.get("recall", "extra_seats", 3))
 EXTRA_SEATS = EXTRA_SEATS if EXTRA_SEAT_NS else 0
 SHELVES = {}
-PUBLIC_KINDS = ("notes", "chats", "memories", "service", "pgvector", "vaultmap", "codemap")   # = adapters/check.py KINDS
+PUBLIC_KINDS = ("notes", "chats", "memories", "service", "pgvector", "vaultmap", "codemap", "workmap")   # = adapters/check.py KINDS
 
 
 def install(adapters):
@@ -101,7 +101,7 @@ def _import_root():
 
 def load_configured(specs=None, cfg=None, embedder=None):
     """Install the adapters the settings file names: first every [shelves] adapters entry ("module:attr" -> an
-    ordered list of Shelf), then the public adapters of its [[adapters.notes|chats|memories|service|pgvector|vaultmap|codemap]] tables, in
+    ordered list of Shelf), then the public adapters of its [[adapters.notes|chats|memories|service|pgvector|vaultmap|codemap|workmap]] tables, in
     config order. `cfg` (default: the settings file, C.raw()) and `embedder` (default: its [embedder] table) are
     for tests and demos. The public set is replaced as a whole on every call: built and validated first, then
     swapped in. An import error or a bad adapter setting raises: a recall service without its shelves must
