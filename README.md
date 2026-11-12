@@ -2,13 +2,19 @@
 
 Made by House of Solance · free for noncommercial use · credit required
 
-Imagine your AI's memory as a library. Every conversation, every note, every little thing you ever told it is a book on a shelf. The library grows every day.
+<div align="center">
 
-Now you ask a question. Your AI has to get up and walk the aisles. It pulls down book after book and flips through pages it doesn't need. It comes back late, arms full, and often holding the wrong one. Some books it never finds at all.
+📚
 
-Antechamber is the librarian at the desk. You ask once. The librarian does the walking, so your AI spends none of its tokens or context on the search. It goes to every shelf at the same time and comes back with just the few pages that matter, each one marked with where it was found and when it was written. Your AI reads those pages and answers you.
+*Imagine your AI's memory as a library. Every conversation, every note, every little thing you ever told it is a book on a shelf. The library grows every day.*
 
-The library stays yours. The librarian never writes in your books. It only finds.
+*Now you ask a question. Your AI has to get up and walk the aisles. It pulls down book after book and flips through pages it doesn't need. It comes back late, arms full, and often holding the wrong one. Some books it never finds at all.*
+
+**Antechamber is the librarian at the desk.** *You ask once. The librarian does the walking, so your AI spends none of its tokens or context on the search. It goes to every shelf at the same time and comes back with just the few pages that matter, each one marked with where it was found and when it was written. Your AI reads those pages and answers you.*
+
+*The library stays yours. The librarian never writes in your books. It only finds.*
+
+</div>
 
 ## What it is
 
