@@ -18,7 +18,7 @@ Antechamber helps your AI remember: one question searches everything you have al
 
 </div>
 
-<p align="center"><img src="docs/how-it-works.svg" width="900" alt="Your AI asks Antechamber once. Antechamber looks through every shelf you have (notes, chats, memories, vault), picks only the few pages that matter, and hands them back to your AI, each marked with where and when it came from. Without it, your AI would walk the aisles itself."></p>
+<p align="center"><img src="docs/how-it-works.svg" width="900" alt="Your AI asks Antechamber once. Antechamber looks through every shelf you have (notes, chats, chat notes, vault), picks only the few pages that matter, and hands them back to your AI, each marked with where and when it came from. Without it, your AI would walk the aisles itself."></p>
 
 ## Benchmarks
 
@@ -61,7 +61,7 @@ Then ask anything. The first time, your assistant asks where you keep notes and 
 
 ## What it is
 
-Recall for your AI. One question searches every shelf you point it at (notes, chat exports, written memories, an Obsidian vault, a code map, a search service, a pgvector table) and only the best matches come back, dated, with their source and the lines around them: about 2,000–6,000 tokens per question, so it works with any model, small or large. No language model inside recall.
+Recall for your AI. One question searches every shelf you point it at (notes, chat exports, chat notes from a note writer, an Obsidian vault, a code map, a search service, a pgvector table) and only the best matches come back, dated, with their source and the lines around them: about 2,000–6,000 tokens per question, so it works with any model, small or large. No language model inside recall.
 
 ## What you need
 
@@ -81,7 +81,7 @@ The plugin sets itself up the first time and keeps its settings in `~/.config/an
 |---|---|
 | `recall` | One question in plain words; the best matches from every connected store come back as text: date, source, title or section, then the passage or the conversation lines around the hit. `limit` 1–20, default 8. |
 | `search_store` | The same search, limited to one connected store, named by its `id`. |
-| `open_item` | One item's full text (up to 20,000 characters), from a store that can open items: notes, chats, memories, a vault. |
+| `open_item` | One item's full text (up to 20,000 characters), from a store that can open items: notes, chats, chat notes, a vault. |
 
 Over plain HTTP the service also answers `GET /antechamber/recall?q=...&limit=...` (JSON) and `GET /health`.
 
@@ -106,14 +106,15 @@ Every store you connect is a shelf. One question goes to every shelf at once: no
 
 ## What we measured
 
-The recall numbers are at the top. The full results, written memories on top of Antechamber, vault notes, and the honest limits of every number: [What we measured](docs/what-we-measured.md).
+The recall numbers are at the top. The full results, chat notes on top of Antechamber, vault notes, and the honest limits of every number: [What we measured](docs/what-we-measured.md).
 
 ## Under development
 
 No claims yet; listed so you know what is coming.
 
+- **The AI's own journal**: a shelf for the journal an AI writes by its own hand (Scriptorium's pen), and a test of how much it helps recall next to chats and chat notes. Not yet built or measured.
 - **Valence and salience recall**: feeling tags shown with each memory; for unasked surfacing, valence-aware fading (grief fades faster than joy), per "Why the Past Should Whisper". Deliberate questions are never steered by feeling. Not yet measured.
-- Decay, resonance boost, warming by use: built in parts, off by default, not yet measured.
+- **Decay, resonance boost, warming by use**: built in parts, off by default, not yet measured.
 
 ## Credit and use
 

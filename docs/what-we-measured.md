@@ -15,7 +15,7 @@ Next benchmark: LongMemEval-M (about 500 conversations per question), recall onl
 
 "Found" = every evidence line for the question is among what recall hands the reader. No language model inside recall: local embeddings, keyword shelves, fusion.
 
-**With notes** (optional supplement). On top of Antechamber, a note writer (a script that writes notes from the chats) plus People cards, our method, vs a plain generic note writer, answered by three readers and judged by Grok with the official LongMemEval judging prompts (LoCoMo strict, 600 questions per set; a step counts only if it holds on two separate sets):
+**With chat notes** (optional supplement). On top of Antechamber, a note writer (a script that writes notes from the chats) plus People cards, our method, vs a plain generic note writer, answered by three readers and judged by Grok with the official LongMemEval judging prompts (LoCoMo strict, 600 questions per set; a step counts only if it holds on two separate sets):
 
 - Small local model (Qwen 3.5 9B): **+6.5 / +6.3** over generic notes, **+12** over chats only. Holds.
 - Large models (Claude Sonnet, GPT Sol): ties generic notes; Sol +3–5 over chats only.

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1020 470" width="1020" height="470" role="img" aria-labelledby="t d">
   <title id="t">How Antechamber works</title>
-  <desc id="d">Without it, your AI would walk the aisles itself (crossed out). Your AI asks Antechamber once. Antechamber looks through everything you have, picks a few, and hands them back to your AI: many pages from your notes, chats, memories and vault. Antechamber picks. On the right, what your AI sees: your question and only a few pages, each marked with where and when it came from.</desc>
+  <desc id="d">Without it, your AI would walk the aisles itself (crossed out). Your AI asks Antechamber once. Antechamber looks through everything you have, picks a few, and hands them back to your AI: many pages from your notes, chats, chat notes and vault. Antechamber picks. On the right, what your AI sees: your question and only a few pages, each marked with where and when it came from.</desc>
   <style>
     .bg{fill:none}
     .frame{fill:#f6f8fa;stroke:#8c959f;stroke-width:1.5;stroke-dasharray:6 5}
@@ -90,7 +90,7 @@
   <rect class="chat" x="351" y="154" width="11" height="24" rx="1.5"/>
   <rect class="chat" x="365" y="148" width="11" height="30" rx="1.5"/>
   <line class="plank" x1="112" y1="179" x2="380" y2="179"/>
-  <text class="label" x="40" y="220">Memories</text>
+  <text class="label" x="40" y="220">Chat notes</text>
   <rect class="mem" x="118" y="200" width="12" height="36" rx="1.5"/>
   <rect class="mem" x="133" y="200" width="12" height="36" rx="1.5"/>
   <rect class="mem" x="148" y="212" width="9" height="24" rx="1.5"/>
@@ -133,7 +133,7 @@
   <rect class="vault" x="361" y="261" width="10" height="33" rx="1.5"/>
   <line class="plank" x1="112" y1="295" x2="380" y2="295"/>
 </g>
-  <text class="small" x="40" y="330">your notes, chats, memories, vault… years of it</text>
+  <text class="small" x="40" y="330">your notes, chats, chat notes, vault… years of it</text>
 
 </g>
   <!-- the old way, crossed out: your AI walking the aisles itself -->
@@ -184,8 +184,8 @@
     <line class="line" x1="556" y1="246" x2="790" y2="246"/>
 
     <rect class="card" x="544" y="272" width="336" height="60" rx="8"/>
-    <rect class="mem" x="556" y="284" width="56" height="20" rx="4"/><text class="small" x="584" y="298" text-anchor="middle">Memory</text>
-    <text class="small" x="624" y="298">from your memories · 2 November</text>
+    <rect class="mem" x="556" y="284" width="56" height="20" rx="4"/><text class="small" x="584" y="298" text-anchor="middle">Chat note</text>
+    <text class="small" x="624" y="298">from your chat notes · 2 November</text>
     <line class="line" x1="556" y1="318" x2="740" y2="318"/>
   </g>
   <text class="small" x="544" y="352">only room for a few: Antechamber keeps the ones that matter</text>
