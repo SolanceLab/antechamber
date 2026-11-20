@@ -15,11 +15,11 @@ Next benchmark: LongMemEval-M (about 500 conversations per question), recall onl
 
 "Found" = every evidence line for the question is among what recall hands the reader. No language model inside recall: local embeddings, keyword shelves, fusion.
 
-**With written memories** (optional supplement). On top of Antechamber, a memory writer plus People cards (our method) vs a plain generic memory writer, answered by three readers and judged by Grok with the official LongMemEval judging prompts (LoCoMo strict, 600 questions per set; a step counts only if it holds on two separate sets):
+**With notes** (optional supplement). On top of Antechamber, a note writer (a script that writes notes from the chats) plus People cards, our method, vs a plain generic note writer, answered by three readers and judged by Grok with the official LongMemEval judging prompts (LoCoMo strict, 600 questions per set; a step counts only if it holds on two separate sets):
 
-- Small local model (Qwen 3.5 9B): **+6.5 / +6.3** over generic memory, **+12** over conversation only. Holds.
-- Large models (Claude Sonnet, GPT Sol): ties generic memory; Sol +3–5 over conversation only.
-- LongMemEval: 30 questions per set, too few to separate the setups (Sonnet already 97% on validation with conversation only).
+- Small local model (Qwen 3.5 9B): **+6.5 / +6.3** over generic notes, **+12** over chats only. Holds.
+- Large models (Claude Sonnet, GPT Sol): ties generic notes; Sol +3–5 over chats only.
+- LongMemEval: 30 questions per set, too few to separate the setups (Sonnet already 97% on validation with chats only).
 
 **Vault notes** (vault-map adapter; measured on our own build notes, not a public benchmark). The right note among the top results for a fresh question, 24 questions per set, three never-seen sets: vault-map v1.2.0 **3, 2, 2 of 24**; section search **20, 15, 18 of 24**. Inside Antechamber's final top 8 the section search lifts vault notes from 0–1 to 6–9 of 24. Demonstration on our notes, small samples.
 
@@ -28,7 +28,7 @@ Next benchmark: LongMemEval-M (about 500 conversations per question), recall onl
 - Answer accuracy with standard search was not measured; the recall gain is the claim.
 - LongMemEval answering used 60 + 28 questions, not all 500.
 - Judge: Grok, not GPT-4o; LoCoMo judged with LongMemEval's general prompt; F1 reported alongside.
-- "Not mentioned" (trick) questions: every reader answers instead of abstaining (0–30%), memory or not.
+- "Not mentioned" (trick) questions: every reader answers instead of abstaining (0–30%), notes or not.
 
 **Method and reproduction:** [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark).
 
