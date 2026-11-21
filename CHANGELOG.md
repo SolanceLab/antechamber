@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0
+
+- The shelf that reads [Scriptorium](https://github.com/SolanceLab/scriptorium)'s chat notes is now called `chatnotes` (`[[adapters.chatnotes]]`). The old name `memories` still works; a config with both is refused so nothing is read twice.
+- The README opens with the line between the two: Scriptorium writes, Antechamber finds and writes nothing.
+- Score page: real token counts beside every text size, counted with Anthropic's token counter on the text the answering model received. The notes results name the instructions measured (October 2026) and say plainly that notes help at equal text is not proven.
+
 ## 1.3.0
 
 - Added the `workmap` shelf: decisions, pipeline items, tasks and ships from work-map, searched by keyword.

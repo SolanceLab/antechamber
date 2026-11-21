@@ -1,7 +1,7 @@
 {
   "name": "antechamber",
   "description": "Antechamber on your own computer: one question searches the folders you choose (notes, chats, memories) and returns only the best matches. Nothing to start or configure: ask, and it sets itself up.",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "author": {
     "name": "House of Solance"
   },
