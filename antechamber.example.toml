@@ -38,9 +38,11 @@ folder = "~/notes"             # a folder of markdown notes (glob = "**/*.md" by
 # path = "~/exports/claude"    # an export file, or a folder holding conversations*.json
 # format = "claude"            # or "chatgpt"
 
-# [[adapters.memories]]        # what a memory writer produced (see engine/adapters/memories.py)
-# id = "memories"
-# folder = "~/memories"
+# Chat notes from Scriptorium (https://github.com/SolanceLab/scriptorium) or a compatible writer.
+# Use one key: [[adapters.chatnotes]] or its legacy alias [[adapters.memories]].
+# [[adapters.chatnotes]]
+# id = "chatnotes"
+# folder = "~/chatnotes"
 
 # [[adapters.vaultmap]]        # an Obsidian (or any markdown) vault, searched through vault-map
 # id = "vault"

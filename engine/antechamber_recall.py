@@ -76,7 +76,7 @@ _env_seats = os.environ.get("ANTECHAMBER_EXTRA_SEATS")
 EXTRA_SEATS = (int(_env_seats) if _env_seats else 0) if _env_seats is not None else int(C.get("recall", "extra_seats", 3))
 EXTRA_SEATS = EXTRA_SEATS if EXTRA_SEAT_NS else 0
 SHELVES = {}
-PUBLIC_KINDS = ("notes", "chats", "memories", "service", "pgvector", "vaultmap", "codemap", "workmap")   # = adapters/check.py KINDS
+PUBLIC_KINDS = ("notes", "chats", "chatnotes", "service", "pgvector", "vaultmap", "codemap", "workmap")   # = adapters/check.py KINDS
 
 
 def install(adapters):
@@ -101,7 +101,7 @@ def _import_root():
 
 def load_configured(specs=None, cfg=None, embedder=None):
     """Install the adapters the settings file names: first every [shelves] adapters entry ("module:attr" -> an
-    ordered list of Shelf), then the public adapters of its [[adapters.notes|chats|memories|service|pgvector|vaultmap|codemap|workmap]] tables, in
+    ordered list of Shelf), then the public adapters of its [[adapters.notes|chats|chatnotes|service|pgvector|vaultmap|codemap|workmap]] tables, in
     config order. `cfg` (default: the settings file, C.raw()) and `embedder` (default: its [embedder] table) are
     for tests and demos. The public set is replaced as a whole on every call: built and validated first, then
     swapped in. An import error or a bad adapter setting raises: a recall service without its shelves must
@@ -122,7 +122,10 @@ def _load_public(cfg, embedder):
     import adapters as public                 # engine/adapters/: notes folders, chat exports, services, pgvector
     from adapters import index as pindex
     Err = public.ConfigError
-    table = cfg.get("adapters")
+    try:
+        table = C.normalize_adapters(cfg.get("adapters"))
+    except ValueError as e:
+        raise Err(str(e)) from None
     table = {} if table is None else table
     if not isinstance(table, dict):
         raise Err("[adapters] must be a table of adapter lists ([[adapters.notes]] ...)")
@@ -151,7 +154,7 @@ def _load_public(cfg, embedder):
                 raise Err(f"adapter id {iid!r} is already the name of a configured shelf; pick another id")
             if iid in KINDS and iid not in mine:
                 raise Err(f"adapter id {iid!r} is already a registered kind; pick another id")
-    cfg = dict(cfg)
+    cfg = dict(cfg, adapters=table)
     cfg.setdefault("_config_dir", C.DIR)
     try:
         shelves = public.load(cfg, embedder=embedder)

@@ -10,12 +10,12 @@ import sys
 import tempfile
 import tomllib
 
-from . import embedders, index as ix
+from . import embedders, index as ix, normalize_adapters
 from .chats import FORMATS
 from .pgvector import validate as pg_validate
 
 KNOWN_TOP = {"embedder", "index", "adapters", "_config_dir"}
-KINDS = ("notes", "chats", "memories", "service", "pgvector", "vaultmap", "codemap", "workmap")
+KINDS = ("notes", "chats", "chatnotes", "service", "pgvector", "vaultmap", "codemap", "workmap")
 
 
 def load_config(path):
@@ -38,20 +38,31 @@ def check(cfg):
     adapters = cfg.get("adapters") or {}
     if not isinstance(adapters, dict):
         return ["[adapters] must be a table of adapter lists ([[adapters.notes]] ...)"]
+    try:
+        adapters = normalize_adapters(adapters)
+    except ValueError as err:
+        return [str(err)]
     for k in adapters:
         if k not in KINDS:
             probs.append(f"[[adapters.{k}]]: unknown adapter (known: {', '.join(KINDS)})")
-    insts = [(k, i) for k in KINDS for i in (adapters.get(k) or [])]
+    insts = []
+    for k in KINDS:
+        entries = adapters.get(k)
+        if entries is None:
+            continue
+        if not isinstance(entries, list):
+            probs.append(f"[[adapters.{k}]] must be a list of tables")
+            continue
+        insts.extend((k, inst) for inst in entries if isinstance(inst, dict))
+        if any(not isinstance(inst, dict) for inst in entries):
+            probs.append(f"[[adapters.{k}]] entries must be tables")
     if not insts:
         probs.append("no adapters configured: add at least one [[adapters.notes]], [[adapters.chats]], "
-                     "[[adapters.service]], [[adapters.pgvector]], [[adapters.vaultmap]], [[adapters.codemap]] or [[adapters.workmap]] table")
+                     "[[adapters.chatnotes]], [[adapters.service]], [[adapters.pgvector]], [[adapters.vaultmap]], [[adapters.codemap]] or [[adapters.workmap]] table")
 
     # ids: present, well-formed, unique across every adapter
     seen = {}
     for k, inst in insts:
-        if not isinstance(inst, dict):
-            probs.append(f"[[adapters.{k}]] entries must be tables")
-            continue
         try:
             iid, _ = ix.instance_ids(inst, k)
         except ValueError as e:
@@ -84,8 +95,8 @@ def check(cfg):
     elif needs_vec:
         probs.append("the pgvector adapter needs an [embedder] table")
 
-    # index dir: only needed by notes/chats/memories
-    if any(k in ("notes", "chats", "memories") for k, _ in insts):
+    # index dir: only needed by notes/chats/chatnotes
+    if any(k in ("notes", "chats", "chatnotes") for k, _ in insts):
         d = _path(base, ((cfg.get("index") or {}).get("dir")) or ix.default_dir())
         try:
             os.makedirs(d, exist_ok=True)
@@ -95,8 +106,6 @@ def check(cfg):
             probs.append(f"[index] dir {d} is not writable ({err.strerror or err})")
 
     for k, inst in insts:
-        if not isinstance(inst, dict):
-            continue
         iid = inst.get("id", "?")
         where = f"[[adapters.{k}]] {iid}"
         if k == "notes":
@@ -111,7 +120,7 @@ def check(cfg):
                 probs.append(f"{where}: path is missing")
             elif not os.path.exists(_path(base, inst["path"])):
                 probs.append(f"{where}: {_path(base, inst['path'])} does not exist")
-        elif k == "memories":
+        elif k == "chatnotes":
             if not inst.get("folder"):
                 probs.append(f"{where}: folder is missing")
             elif not os.path.isdir(_path(base, inst["folder"])):

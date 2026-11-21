@@ -8,20 +8,28 @@ settings rolls back instead of running against the wrong database. Example: ../a
 import os
 import tomllib
 
+from adapters import normalize_adapters
+
 PATH = os.environ.get("ANTECHAMBER_CONFIG") or os.path.expanduser("~/.config/antechamber/config.toml")
-_d = {}
-if os.path.exists(PATH):
+
+
+def _read():
+    if not os.path.exists(PATH):
+        return {}
     with open(PATH, "rb") as f:
-        _d = tomllib.load(f)
+        data = tomllib.load(f)
+    if "adapters" in data:
+        data["adapters"] = normalize_adapters(data["adapters"])
+    return data
+
+
+_d = _read()
 
 
 def reload():
-    """Read the settings file again (setup_stores wrote it): what get() and raw() answer changes, nothing else."""
-    global LOADED
-    _d.clear()
-    if os.path.exists(PATH):
-        with open(PATH, "rb") as f:
-            _d.update(tomllib.load(f))
+    """Read the settings file again after setup_stores writes it."""
+    global _d, LOADED
+    _d = _read()
     LOADED = bool(_d)
 
 

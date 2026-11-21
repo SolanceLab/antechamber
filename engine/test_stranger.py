@@ -102,7 +102,21 @@ class StrangerRecall(unittest.TestCase):
     def load(self, cfg, emb=None, specs=()):
         return A.load_configured(specs=list(specs), cfg=cfg, embedder=emb or embedders.HashEmbedder(64))
 
-    def test_memories_adapter_loads_through_recall_with_source_lines(self):
+    def test_chatnotes_config_key_does_not_reserve_the_shelf_id(self):
+        cfg = stranger_cfg(self.tmp)
+        cfg["adapters"]["notes"][0]["id"] = "chatnotes"
+        self.load(cfg)
+        self.assertIn("chatnotes", A.SHELVES)
+
+    def test_checker_rejects_malformed_chatnotes_alias_tables(self):
+        for kind in ("chatnotes", "memories"):
+            for entries in (17, {"folder": "notes"}, [1]):
+                with self.subTest(kind=kind, entries=entries):
+                    problems = chk.check({"adapters": {kind: entries}})
+                    self.assertIn("[[adapters.chatnotes]]", problems[0])
+                    self.assertIn("tables", problems[0])
+
+    def test_chatnotes_alias_loads_same_notes_and_ids_through_recall(self):
         # the memories adapter shipped in adapters/ but recall's own kind list refused it, so no install could use
         # it (found by the benchmark, 17 Oct). Recall must accept every kind adapters/check.py accepts.
         self.assertEqual(set(A.PUBLIC_KINDS), set(chk.KINDS))
@@ -116,10 +130,33 @@ class StrangerRecall(unittest.TestCase):
         cfg["adapters"]["memories"] = [{"id": "my-memories", "name": "Memories", "folder": mem,
                                         "export": os.path.join(FIX, "claude", "conversations.json"),
                                         "redundant_with": ["my-chats"]}]
-        self.load(cfg, embedders.HashEmbedder(256))
-        adapters.refresh_all(A.PUBLIC_SHELVES)
-        self.assertEqual(list(A.SHELVES), ["my-notes", "my-chats", "my-memories"])
-        out = A.recall("early coastal train harbour", shelves=["my-memories"])
+        inst = cfg["adapters"].pop("memories")[0]
+        path = os.path.join(self.tmp, "alias.toml")
+        results = []
+        for kind in ("memories", "chatnotes"):
+            with self.subTest(kind=kind):
+                with open(path, "w") as f:
+                    f.write(f'[index]\ndir = "index"\n[[adapters.{kind}]]\n'
+                            f'id = "my-memories"\nfolder = {json.dumps(mem)}\n'
+                            f'export = {json.dumps(inst["export"])}\n')
+                saved = chk.load_config(path)
+                self.assertEqual(chk.check(saved), [])
+                self.load(saved, embedders.HashEmbedder(256))
+                adapters.refresh_all(A.PUBLIC_SHELVES)
+                self.assertEqual(list(A.SHELVES), ["my-memories"])
+                results.append(A.recall("early coastal train harbour", shelves=["my-memories"])["winners"])
+        self.assertEqual(results[0], results[1])
+        out = {"winners": results[0]}
+        with open(path, "a") as f:
+            f.write('[[adapters.memories]]\nid = "other"\nfolder = "memories"\n')
+        both = chk.load_config(path)
+        for message in (chk.check(both)[0], run_check([], clean_env(path)).stdout):
+            self.assertIn("[[adapters.chatnotes]] and [[adapters.memories]]", message)
+        with self.assertRaisesRegex(adapters.ConfigError, "are aliases"):
+            self.load(both)
+        with mock.patch.object(A.C, "PATH", path), self.assertRaisesRegex(ValueError, "are aliases"):
+            A.C.reload()
+
         w = [x for x in out["winners"] if "early coastal train" in (x.get("text") or "")]   # the memory itself
         self.assertTrue(w, out["winners"])
         self.assertTrue(any("8:15" in (ln.get("message") or "") for ln in w[0].get("lines") or []))

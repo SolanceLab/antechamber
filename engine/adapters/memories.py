@@ -1,7 +1,7 @@
 # Antechamber — Copyright (c) 2026 House of Solance. PolyForm Noncommercial 1.0.0. Required Notice: Copyright (c) 2026 House of Solance (https://github.com/SolanceLab)
 """memories — the memory files a memory writer produced, searched by meaning and by words.
 
-    [[adapters.memories]]
+    [[adapters.chatnotes]]
     id = "memories"               # immutable; names the index file and the fusion key
     name = "Memories"             # shown only
     folder = "~/memories"         # one JSON file per conversation, as the memory writer writes them
@@ -124,7 +124,7 @@ def export_lines(path, max_bytes, problems=None):
                             seen = set()
                             problems += [("repeated-id", mid) for mid, _, _, _ in msgs if mid in seen or seen.add(mid)]
         except (OSError, ValueError) as e:            # one unreadable export file never blocks the others,
-            log.warning("memories: export file %s not read (%s)", p, e)   # and a half-read one adds nothing
+            log.warning("chatnotes: export file %s not read (%s)", p, e)   # and a half-read one adds nothing
             if problems is not None:
                 problems.append(("unread-file", p))
             continue
@@ -258,8 +258,10 @@ def make_open(index):
 
 
 def from_config(cfg, embedder=None):
-    """[[adapters.memories]] tables -> one shelf each. `embedder` overrides the [embedder] table (tests, demos)."""
-    insts = ((cfg or {}).get("adapters") or {}).get("memories") or []
+    """[[adapters.chatnotes]] tables -> one shelf each. `embedder` overrides the [embedder] table (tests, demos)."""
+    from . import normalize_adapters
+
+    insts = normalize_adapters((cfg or {}).get("adapters") or {}).get("chatnotes") or []
     if not insts:
         return []
     base = base_dir_of(cfg)
@@ -267,18 +269,18 @@ def from_config(cfg, embedder=None):
         embedder = embedders.shared(cfg)
     shelves = []
     for inst in insts:
-        iid, name = ix.instance_ids(inst, "memories")
+        iid, name = ix.instance_ids(inst, "chatnotes")
         if not inst.get("folder"):
-            raise embedders.ConfigError(f"[[adapters.memories]] {iid}: folder is missing")
+            raise embedders.ConfigError(f"[[adapters.chatnotes]] {iid}: folder is missing")
         folder = resolve(base, inst["folder"])
         if not os.path.isdir(folder):
-            raise embedders.ConfigError(f"[[adapters.memories]] {iid}: folder {folder} does not exist")
+            raise embedders.ConfigError(f"[[adapters.chatnotes]] {iid}: folder {folder} does not exist")
         export = resolve(base, inst["export"]) if inst.get("export") else None
         if export and not os.path.exists(export):
-            raise embedders.ConfigError(f"[[adapters.memories]] {iid}: export {export} does not exist")
+            raise embedders.ConfigError(f"[[adapters.chatnotes]] {iid}: export {export} does not exist")
         red = inst.get("redundant_with") or []
         if not isinstance(red, list) or not all(isinstance(x, str) for x in red):
-            raise embedders.ConfigError(f"[[adapters.memories]] {iid}: redundant_with must be a list of adapter ids")
+            raise embedders.ConfigError(f"[[adapters.chatnotes]] {iid}: redundant_with must be a list of adapter ids")
         mx = int(inst.get("max_file_bytes", 50_000_000))
         mex = int(inst.get("max_export_bytes", 500_000_000))
         fp = {"adapter": "memories", "folder": folder, "export": export, "reader": READER_VERSION,

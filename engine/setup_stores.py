@@ -13,19 +13,20 @@ import urllib.request
 import config as C
 import antechamber_recall
 import mcp_http
+from adapters import CHATNOTES_DUPLICATE
 
 NO_STORES = ("Antechamber has no stores yet. Ask the user which folders to search, "
              "then call setup_stores.")
 MARKER = "# Written by Antechamber setup_stores."
 SECTION = {"vault": "vaultmap"}      # the settings section a kind is written under (default: the kind itself)
 VAULT_MAP_VERSION = "1.3.1"
-KINDS = ("notes", "chats", "memories", "vault")
+KINDS = ("notes", "chats", "chatnotes", "memories", "vault")
 TOOL = {
     "name": "setup_stores",
     "description": ("Choose which stores Antechamber searches. Call it on first run (when recall says there are no "
                     "stores yet), after asking the user which folders to search. Each store is a kind (notes: a "
-                    "folder of Markdown or text notes; chats: a Claude or ChatGPT export file or folder; memories: "
-                    "a folder of memory files; vault: an Obsidian vault, a folder holding .obsidian, only when look_for_stores "
+                    "folder of Markdown or text notes; chats: a Claude or ChatGPT export file or folder; chatnotes (alias memories): "
+                    "a folder of chat notes; vault: an Obsidian vault, a folder holding .obsidian, only when look_for_stores "
                     "found one) and an absolute path. It writes the settings file and loads the stores "
                     "at once. It works only until stores exist; after that the person edits the settings file."),
     "inputSchema": {
@@ -119,10 +120,12 @@ def _check(stores):
     """-> (clean stores, error text or None)."""
     if not isinstance(stores, list) or not stores:
         return None, "stores must be a non-empty list"
-    clean, used = [], set()
+    clean = []
+    kinds = set()
     for i, s in enumerate(stores, 1):
         if not isinstance(s, dict) or s.get("kind") not in KINDS:
             return None, f"store {i}: kind must be one of {', '.join(KINDS)}"
+        kinds.add(s["kind"])
         raw = str(s.get("path") or "").strip()
         path = os.path.expanduser(raw)
         if not raw or not os.path.isabs(path):
@@ -140,6 +143,11 @@ def _check(stores):
         if s["kind"] == "chats" and fmt not in ("claude", "chatgpt"):
             return None, f"store {i}: format must be claude or chatgpt"
         clean.append({"kind": s["kind"], "path": path, "format": fmt, "name": str(s.get("name") or "").strip()})
+    if {"chatnotes", "memories"} <= kinds:
+        return None, CHATNOTES_DUPLICATE
+    for store in clean:
+        if store["kind"] == "memories":
+            store["kind"] = "chatnotes"
     return _ids(clean), None
 
 
@@ -282,10 +290,10 @@ MAX_PATHS = 20
 LOOK_TOOL = {
     "name": "look_for_stores",
     "description": ("Read-only. Call it on first run with the paths the user named, before setup_stores. For each "
-                    "path it says what is there: notes, obsidian vault, scriptorium memories, claude export, "
+                    "path it says what is there: notes, obsidian vault, scriptorium chat notes, claude export, "
                     "chatgpt export, unknown or missing. It counts files and peeks at the start of a few "
                     "JSON files on this computer to tell an export from a memory file; it reports only the kind, "
-                    "never any text. At most 20 paths per call. Offer vault or memories to the user only when it finds one."),
+                    "never any text. At most 20 paths per call. Offer vault or chatnotes to the user only when it finds one."),
     "inputSchema": {"type": "object", "properties": {"paths": {"type": "array", "minItems": 1, "maxItems": MAX_PATHS, "items": {"type": "string"}}},
                     "required": ["paths"]},
 }
@@ -369,7 +377,7 @@ def _look(path):
     if len(kinds) == 1:
         out["looks_like"] = f"{kinds.pop()} export"
     elif any(_is_memory_file(f) for f in top_json[:3]):
-        out["looks_like"] = "scriptorium memories"
+        out["looks_like"] = "scriptorium chat notes"
         out["files"] = len(top_json)
     else:
         out["looks_like"] = "notes" if notes else "unknown"

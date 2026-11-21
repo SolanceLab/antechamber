@@ -45,12 +45,26 @@ class Look(unittest.TestCase):
         mk(self.t, "empty/x.bin")
         self.assertEqual((self.look("notes")["looks_like"], self.look("notes")["notes"]), ("notes", 2))
         self.assertEqual(self.look("vault")["looks_like"], "obsidian vault")
-        self.assertEqual(self.look("mem")["looks_like"], "scriptorium memories")
+        self.assertEqual(self.look("mem")["looks_like"], "scriptorium chat notes")
         self.assertEqual(self.look("claude")["looks_like"], "claude export")
         self.assertEqual(self.look("gpt")["looks_like"], "chatgpt export")
         self.assertEqual(self.look("claude/conversations.json")["looks_like"], "claude export")
         self.assertEqual(self.look("empty")["looks_like"], "unknown")
         self.assertEqual(self.look("nope")["looks_like"], "missing")
+
+    def test_setup_accepts_both_chatnotes_spellings(self):
+        note = mk(self.t, "mem/one.json", '{"conversation_id":"c","memories":[{"summary":"A chat note"}]}')
+        folder = os.path.dirname(note)
+        kinds = S.TOOL["inputSchema"]["properties"]["stores"]["items"]["properties"]["kind"]["enum"]
+        for kind in ("chatnotes", "memories"):
+            with self.subTest(kind=kind):
+                self.assertIn(kind, kinds)
+                clean, error = S._check([{"kind": kind, "path": folder}])
+                self.assertIsNone(error)
+                self.assertIn("[[adapters.chatnotes]]", S.render(clean, "none"))
+        result = S.setup_stores({"stores": [{"kind": kind, "path": folder} for kind in ("chatnotes", "memories")]})
+        self.assertTrue(result["isError"])
+        self.assertIn("are aliases", result["content"][0]["text"])
 
     def test_caps_and_never_follows_links_and_writes_nothing(self):
         for i in range(30):

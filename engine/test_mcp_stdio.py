@@ -62,6 +62,23 @@ class Stdio(unittest.TestCase):
         self.assertTrue(a[6]["result"].get("isError"))                     # configured: the assistant cannot change stores
         self.assertEqual(stat.S_IMODE(os.stat(self.cfg).st_mode), 0o600)
 
+    def test_plugin_setup_accepts_both_chatnotes_spellings(self):
+        folder = os.path.join(self.t, "chatnotes")
+        os.mkdir(folder)
+        with open(os.path.join(folder, "chat.json"), "w") as f:
+            json.dump({"conversation_id": "chat", "memories": [{"summary": "The zebra backups run weekly."}]}, f)
+        for kind in ("chatnotes", "memories"):
+            with self.subTest(kind=kind):
+                self.cfg = os.path.join(self.t, kind, "plugin.toml")
+                result = self.run_server([
+                    call(1, "setup_stores", stores=[{"kind": kind, "path": folder}]),
+                    call(2, "recall", query="zebra backups"),
+                ])
+                self.assertIn("Antechamber is set up", self.text(result[1]))
+                self.assertIn("zebra backups", self.text(result[2]))
+                with open(self.cfg) as f:
+                    self.assertIn("[[adapters.chatnotes]]", f.read())
+
     def test_refuses_bad_paths_and_writes_nothing(self):
         a = self.run_server([call(1, "setup_stores", stores=[{"kind": "notes", "path": "relative/notes"}]),
                              call(2, "setup_stores", stores=[{"kind": "notes", "path": os.path.join(self.t, "missing")}]),

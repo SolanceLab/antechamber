@@ -11,7 +11,7 @@ The service reads one settings file: `~/.config/antechamber/config.toml` (the pl
 | `[embedder]` | `backend` (`ollama` or `openai`), `url`, `model`, `dims`; `api_key_env` names an environment variable, never the key |
 | `[index]` | `dir` for the local search indexes; `refresh_minutes` (default 15) |
 | `[recall]` | `extra_seat_shelves`, `extra_seats` (default 3): reserved seats, below |
-| `[[adapters.*]]` | one table per store: `notes`, `chats`, `memories`, `vaultmap`, `codemap`, `workmap`, `service`, `pgvector` (`codemap` reads a code map written by [Graphify](https://github.com/Graphify-Labs/graphify) with `graphify extract <dir> --code-only`: `graph = "path/to/graph.json"`; `workmap` reads the decisions, pipeline items, tasks and ships that [work-map](https://github.com/SolanceLab/work-map) indexes: `work_map = "path/to/work_map.py"`, `config = "path/to/work-map.json"`, optional `work_map_sha256`) |
+| `[[adapters.*]]` | one table per store: `notes`, `chats`, `chatnotes`, `vaultmap`, `codemap`, `workmap`, `service`, `pgvector` (`codemap` reads a code map written by [Graphify](https://github.com/Graphify-Labs/graphify) with `graphify extract <dir> --code-only`: `graph = "path/to/graph.json"`; `workmap` reads the decisions, pipeline items, tasks and ships that [work-map](https://github.com/SolanceLab/work-map) indexes: `work_map = "path/to/work_map.py"`, `config = "path/to/work-map.json"`, optional `work_map_sha256`) |
 
 Each adapter's file in `engine/adapters/` documents its full table. Ids are lower-case letters, digits, `-` or `_`, and never change once chosen.
 
@@ -24,3 +24,7 @@ extra_seats = 3
 ```
 
 Measured on our notes: vault notes in the final results went from 0 to 7 of 24 on a fresh question set, with no loss on 72 other questions.
+
+### Chat notes
+
+Use `[[adapters.chatnotes]]` for a folder of chat notes such as those written by [Scriptorium](https://github.com/SolanceLab/scriptorium). Existing `[[adapters.memories]]` tables work as an alias. Use one spelling per config and keep the existing store `id` when switching. The `[[adapters.notes]]` adapter still reads Markdown and text folders.

@@ -1,8 +1,8 @@
 # Antechamber
 
-Made by House of Solance · free for noncommercial use · credit required
+[Scriptorium](https://github.com/SolanceLab/scriptorium) writes entries and chat notes, and Antechamber finds notes and chat lines without writing anything.
 
-Antechamber helps your AI remember: one question searches everything you have already saved and brings back only the moments that matter.
+Made by House of Solance · free for noncommercial use · credit required
 
 <div align="center">
 
@@ -18,13 +18,13 @@ Antechamber helps your AI remember: one question searches everything you have al
 
 </div>
 
-<p align="center"><img src="docs/how-it-works.svg" width="900" alt="Your AI asks Antechamber once. Antechamber looks through every shelf you have (notes, chats, chat notes, vault), picks only the few pages that matter, and hands them back to your AI, each marked with where and when it came from. Without it, your AI would walk the aisles itself."></p>
+<p align="center"><img src="docs/how-it-works.svg" width="900" alt="Your AI asks Antechamber once. Antechamber looks through every shelf you have (notes, chats, chat notes, vault), picks only the few pages that matter, and returns them to your AI, each marked with where and when it came from. Without it, your AI would walk the aisles itself."></p>
 
 ## Benchmarks
 
 **Standard search finds what you need about 60% of the time. Antechamber finds it 8 times out of 10.**
 
-Recall on two public long-memory benchmarks, on every question the method never saw. "Found" = every evidence line for the question is among what recall hands the reader.
+Recall on two public long-memory benchmarks, on every question the method never saw. "Found" = every evidence line for the question is among what recall returns to the reader.
 
 | Benchmark | Questions | Standard search | Antechamber | Gain |
 |---|---|---|---|---|
@@ -87,7 +87,7 @@ Over plain HTTP the service also answers `GET /antechamber/recall?q=...&limit=..
 
 ## Updates
 
-Third-party marketplaces do not auto-update by default. To turn it on once: `/plugin` > Marketplaces > `solancelab` > Enable auto-update. To update by hand: `claude plugin marketplace update solancelab` then `claude plugin update antechamber@solancelab`, then restart. The engine and the recall service update with `git pull`.
+Third-party marketplaces do not auto-update by default. To turn it on once: `/plugin` > Marketplaces > `solancelab` > Enable auto-update. To update manually: `claude plugin marketplace update solancelab` then `claude plugin update antechamber@solancelab`, then restart. The engine and the recall service update with `git pull`.
 
 Once a day it checks GitHub for a newer version and sends nothing about you; `PLUGIN_UPDATE_CHECK=0` turns that off.
 
@@ -112,7 +112,7 @@ The recall numbers are at the top. The full results, chat notes on top of Antech
 
 No claims yet; listed so you know what is coming.
 
-- **The AI's own journal**: a shelf for the journal an AI writes by its own hand (Scriptorium's pen), and a test of how much it helps recall next to chats and chat notes. Not yet built or measured.
+- **AI-written entries**: a shelf for entries from [Scriptorium](https://github.com/SolanceLab/scriptorium), and a test of how much they help recall alongside chats and chat notes. Planned.
 - **Valence and salience recall**: feeling tags shown with each memory; for unasked surfacing, valence-aware fading (grief fades faster than joy), per "Why the Past Should Whisper". Deliberate questions are never steered by feeling. Not yet measured.
 - **Decay, resonance boost, warming by use**: built in parts, off by default, not yet measured.
 

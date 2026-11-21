@@ -24,7 +24,7 @@ Config shape (TOML):
     path = "~/exports/claude"
     format = "claude"              # or "chatgpt"
 
-    [[adapters.memories]]          # what a memory writer produced (see memories.py for the file format)
+    [[adapters.chatnotes]]         # chat notes (see memories.py for the file format)
     id = "memories"
     folder = "~/memories"
     export = "~/exports/claude"    # optional: brings each winning memory's source lines
@@ -66,13 +66,26 @@ import threading
 
 from .item import ITEM_PROTOCOL, KIND, make_item, normalize_date, render_item  # noqa: F401
 from .embedders import ConfigError  # noqa: F401
+
+CHATNOTES_DUPLICATE = "[[adapters.chatnotes]] and [[adapters.memories]] are aliases. Use only one."
+
+
+def normalize_adapters(table):
+    """Canonical adapter keys without changing the caller's mapping or shelf ids."""
+    if not isinstance(table, dict) or "memories" not in table:
+        return table
+    if "chatnotes" in table:
+        raise ValueError(CHATNOTES_DUPLICATE)
+    return {("chatnotes" if kind == "memories" else kind): entries for kind, entries in table.items()}
+
+
 from .check import check as check_config, load_config  # noqa: F401
 
 log = logging.getLogger("antechamber.adapters")
 
 
 def load(cfg, embedder=None):
-    """Every configured public adapter -> shelves, in config order by kind (notes, chats, memories, service, vaultmap, codemap, workmap, pgvector).
+    """Every configured public adapter -> shelves, in config order by kind (notes, chats, chatnotes, service, vaultmap, codemap, workmap, pgvector).
     The pgvector module (and psycopg) is only imported when a pgvector adapter is configured."""
     from . import notes, chats, service, memories, vaultmap, codemap, workmap
     a = (cfg or {}).get("adapters") or {}
