@@ -6,10 +6,12 @@
 
 | Search comparison | Standard search with surrounding lines | Antechamber |
 |---|---|---|
-| LoCoMo | 4,703 characters · **Tokens pending** (`locomo-window`) | 8,253 characters · **Tokens pending** (`locomo-antechamber`) |
-| LongMemEval-S | 25,746 characters · **Tokens pending** (`lme-window`) | 24,964 characters · **Tokens pending** (`lme-antechamber`) |
+| LoCoMo | 4,703 characters · **1,773 tokens** | 8,253 characters · **2,633 tokens** |
+| LongMemEval-S | 25,746 characters · **8,860 tokens** | 24,964 characters · **7,041 tokens** |
 
-The character figures above use the text fields returned by search. Token counts will use the formatted evidence text from the same saved questions. Formatted text averaged 5,037 vs 7,327 characters on LoCoMo and 25,979 vs 20,673 on LongMemEval-S, in the same order.
+The character figures above use the text fields returned by search. Tokens were counted on the rendered text the answering model received, averaging 5,037 and 7,327 characters on LoCoMo and 25,979 and 20,673 on LongMemEval-S, in table order.
+
+All token figures are means per question, measured on 21 Nov 2026 with Anthropic's token counting endpoint and `claude-sonnet-5-5`. [Endpoint documentation](https://platform.claude.com/docs/en/api/messages/count_tokens)
 
 The LongMemEval-S equal-text comparison refers to search at roughly 25,000 returned characters per arm. The 5.1-point lead measures evidence retrieval.
 
@@ -32,11 +34,11 @@ The benchmark measured the October instructions. The default instructions shippe
 
 | Setup | Mean characters | Mean tokens | Reserved seats | Writer prompt | Writer model |
 |---|---:|---|---:|---|---|
-| Chats only | 7,214 | **Pending** (`locomo-chats-only`) | 0 | — | — |
-| Generic notes | 7,997 | **Pending** (`locomo-generic-notes`) | 3 | `generic_memory.md` | Claude Sonnet 5.5 |
-| Our notes plus People | 10,586 | **Pending** (`locomo-notes-people`) | 3 | October `prompt-public.md` | Claude Sonnet 5.5 |
+| Chats only | 7,214 | 2,591 | 0 | — | — |
+| Generic notes | 7,997 | 2,874 | 3 | `generic_memory.md` | Claude Sonnet 5.5 |
+| Our notes plus People | 10,586 | 3,755 | 3 | October `prompt-public.md` | Claude Sonnet 5.5 |
 
-Means use the formatted recall context sent to Qwen for each of the 600 LoCoMo validation questions. All token placeholders on this page use Anthropic's [token counting endpoint](https://platform.claude.com/docs/en/api/messages/count_tokens) with `claude-sonnet-5-5` and API version `2026-10-21`. The size-matched sample was too small to establish whether notes improve answers at equal text size.
+Means use the formatted recall context sent to Qwen for each of the 600 LoCoMo validation questions. The size-matched sample was too small to establish whether notes improve answers at equal text size.
 
 Three models answered the questions. Grok judged the answers using the official LongMemEval judging prompts. The LoCoMo results use strict scores on two sets of 600 questions:
 

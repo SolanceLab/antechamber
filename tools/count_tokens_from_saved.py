@@ -2,9 +2,9 @@
 """Count saved benchmark context with Anthropic. This sends public benchmark text.
 
 Use --inspect to verify the saved inputs and write their counts and character
-means without making requests. The JSON keys match the score-page placeholders.
-Defaults expect both benchmark checkouts under ~/Developer. Only point the
-script at trusted checkouts, since it loads their benchmark renderers.
+means without making requests. Supply both benchmark checkout paths explicitly.
+Only point the script at trusted checkouts, since it loads their benchmark
+renderers.
 """
 import argparse
 import hashlib
@@ -105,8 +105,8 @@ def count_tokens(connection, key, text):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--locomo-root", type=Path, default=Path.home() / "Developer/locomo-bench")
-    parser.add_argument("--recall-root", type=Path, default=Path.home() / "Developer/antechamber-benchmark")
+    parser.add_argument("--locomo-root", type=Path, required=True, help="path to the locomo-bench checkout")
+    parser.add_argument("--recall-root", type=Path, required=True, help="path to the antechamber-benchmark checkout")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--inspect", action="store_true", help="verify inputs without sending any requests")
     args = parser.parse_args()
