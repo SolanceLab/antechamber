@@ -1,8 +1,8 @@
 # Antechamber
 
-[Scriptorium](https://github.com/SolanceLab/scriptorium) writes entries and chat notes, and Antechamber finds notes and chat lines without writing anything.
-
 Made by House of Solance · free for noncommercial use · credit required
+
+[Scriptorium](https://github.com/SolanceLab/scriptorium) writes entries and chat notes, and Antechamber finds notes and chat lines without writing anything.
 
 <div align="center">
 
