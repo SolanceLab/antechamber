@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.1 — 23 November 2026
+
+Docs: What you need lists work-map as an optional source for the `workmap` store, next to vault-map and Graphify.
+
 ## 1.4.0
 
 - The shelf that reads [Scriptorium](https://github.com/SolanceLab/scriptorium)'s chat notes is now called `chatnotes` (`[[adapters.chatnotes]]`). The old name `memories` still works; a config with both is refused so nothing is read twice.

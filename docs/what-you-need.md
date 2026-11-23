@@ -7,5 +7,6 @@
 - Optional: `psycopg`, only if you connect a pgvector table.
 - Optional: [Graphify](https://github.com/Graphify-Labs/graphify), only to build a code map for the `codemap` store (Antechamber only reads its `graph.json`).
 - Optional: [vault-map](https://github.com/SolanceLab/vault-map), only if you connect an Obsidian vault.
+- Optional: [work-map](https://github.com/SolanceLab/work-map), only if you connect your project records (decisions, pipeline items, tasks and releases) as the `workmap` store.
 
 Antechamber runs on your own computer. The service listens on 127.0.0.1 only, and your stores never leave your machine unless you point the embedder at a remote endpoint and allow it out loud (`allow_remote_data = true`).
