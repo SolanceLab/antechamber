@@ -12,6 +12,7 @@
 [![Licence](https://img.shields.io/badge/licence-PolyForm%20Noncommercial-1c2742)](LICENSE.md)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-56607c)](#quick-start)
 [![Codex](https://img.shields.io/badge/Codex-plugin-56607c)](#quick-start)
+[![claude.ai · ChatGPT](https://img.shields.io/badge/claude.ai%20%C2%B7%20ChatGPT-remote%20door-56607c)](docs/run-it-yourself.md)
 
 </div>
 
