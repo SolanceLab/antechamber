@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 280" width="1280" height="280" role="img" aria-label="Antechamber: one question, the right pages">
+  <rect width="1280" height="280" rx="18" fill="#fbf7ef"/>
+  <rect x="10" y="10" width="1260" height="260" rx="12" fill="none" stroke="#b5893a" stroke-opacity="0.45" stroke-width="1.5"/>
+  <g transform="translate(110,58)" fill="none" stroke="#1c2742" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M10 160 L170 160"/>
+    <rect x="30" y="118" width="84" height="16" rx="3" fill="#f6ead0" stroke="#b5893a"/>
+    <rect x="38" y="102" width="68" height="16" rx="3"/>
+    <rect x="46" y="86" width="52" height="16" rx="3" fill="#f6ead0" fill-opacity="0.55"/>
+    <circle cx="124" cy="62" r="26"/>
+    <path d="M143 81 L166 108"/>
+  </g>
+  <text x="340" y="150" font-family="Georgia, 'Times New Roman', serif" font-size="84" fill="#1c2742" letter-spacing="1">Antechamber</text>
+  <line x1="880" y1="70" x2="880" y2="210" stroke="#b5893a" stroke-width="2"/>
+  <text x="912" y="128" font-family="Georgia, 'Times New Roman', serif" font-size="32" font-style="italic" fill="#56607c">One question.</text>
+  <text x="912" y="172" font-family="Georgia, 'Times New Roman', serif" font-size="32" font-style="italic" fill="#56607c">The right pages.</text>
+  <text x="342" y="196" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" fill="#b5893a" letter-spacing="4">ASK · SEARCH · RANK · RETURN</text>
+</svg>

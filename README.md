@@ -1,14 +1,32 @@
-# Antechamber
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/banner-dark.svg">
+  <img src="docs/banner-light.svg" width="100%" alt="Antechamber: one question, the right pages. Ask, search, rank, return.">
+</picture>
+
+[Quick start](#quick-start) • [What's inside](#what-it-is) • [Benchmarks](#benchmarks) • [Reproduce the numbers](https://github.com/SolanceLab/antechamber-benchmark) • [Support us](https://ko-fi.com/houseofsolance)
+
+[![Tests](https://img.shields.io/github/actions/workflow/status/SolanceLab/antechamber/test.yml?branch=main&label=tests)](https://github.com/SolanceLab/antechamber/actions/workflows/test.yml)
+[![Release](https://img.shields.io/github/v/release/SolanceLab/antechamber?label=release&color=b5893a)](https://github.com/SolanceLab/antechamber/releases/latest)
+[![Licence](https://img.shields.io/badge/licence-PolyForm%20Noncommercial-1c2742)](LICENSE.md)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-56607c)](#quick-start)
+[![Codex](https://img.shields.io/badge/Codex-plugin-56607c)](#quick-start)
+
+</div>
 
 Made by House of Solance · free for noncommercial use · credit required
 
 [Scriptorium](https://github.com/SolanceLab/scriptorium) writes entries and chat notes, and Antechamber finds notes and chat lines without writing anything.
 
-<div align="center">
+> 🆕 **New in 1.4.1:** What you need now lists work-map as an optional source for the `workmap` store, next to vault-map and Graphify.
 
-📚
+<table>
+<tr>
+<td width="42%"><img src="docs/card.jpg" width="100%" alt="A quiet library at evening. A librarian sits at a wooden desk before tall shelves, a small stack of pages glowing in front of them, while thin gold threads of light run to it from several shelves. A visitor stands at the desk with empty hands."></td>
+<td>
 
-*Imagine your AI's memory as a library. Every conversation, every note, every little thing you ever told it is a book on a shelf. The library grows every day.*
+📚 *Imagine your AI's memory as a library. Every conversation, every note, every little thing you ever told it is a book on a shelf. The library grows every day.*
 
 *Now you ask a question. Your AI has to get up and walk the aisles. It pulls down book after book and flips through pages it doesn't need. It comes back late, arms full, and often holding the wrong one. Some books it never finds at all.*
 
@@ -16,9 +34,19 @@ Made by House of Solance · free for noncommercial use · credit required
 
 *The library stays yours. The librarian never writes in your books. It only finds.*
 
-</div>
+</td>
+</tr>
+</table>
 
 <p align="center"><img src="docs/how-it-works.svg" width="900" alt="Your AI asks Antechamber once. Antechamber looks through every shelf you have (notes, chats, chat notes, vault), picks only the few pages that matter, and returns them to your AI, each marked with where and when it came from. Without it, your AI would walk the aisles itself."></p>
+
+**Contents:** [Benchmarks](#benchmarks) · [Quick start](#quick-start) · [What it is](#what-it-is) · [Where it fits](#where-it-fits) · [What you need](#what-you-need) · [More ways to run it](#more-ways-to-run-it) · [Settings](#settings) · [Tools](#tools) · [Updates](#updates) · [Limits](#limits) · [How it works](#how-it-works) · [What we measured](#what-we-measured) · [Under development](#under-development) · [Credit and use](#credit-and-use) · [Licence](#licence) · [Support](#support)
+
+## Where it fits
+
+**Fits** if your notes and chat exports have grown past what your AI can search by hand, and you want one question to reach all of them at once.
+
+**Overkill** if you keep only a handful of notes; your AI can read those itself.
 
 ## Benchmarks
 
@@ -31,7 +59,7 @@ Recall on two public long-memory benchmarks, on every question the method never 
 | LoCoMo | 1,493 | 56.7% | **78.9%** | +22.2 points |
 | LongMemEval (S, cleaned) | 412 | 62.6% | **77.7%** | +15.0 points |
 
-How it was measured, what it does and doesn't prove, and how to reproduce it: [What we measured](docs/what-we-measured.md) · [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark).
+We ran these measurements ourselves, not an outside group. How it was measured, what it does and doesn't prove, and how to rerun it yourself: [What we measured](docs/what-we-measured.md) · [antechamber-benchmark](https://github.com/SolanceLab/antechamber-benchmark).
 
 ## Quick start
 
