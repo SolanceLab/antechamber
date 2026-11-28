@@ -13,6 +13,9 @@
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-plugin-56607c)](#quick-start)
 [![Codex](https://img.shields.io/badge/Codex-plugin-56607c)](#quick-start)
 [![claude.ai · ChatGPT](https://img.shields.io/badge/claude.ai%20%C2%B7%20ChatGPT-remote%20door-56607c)](docs/run-it-yourself.md)
+[![macOS](https://img.shields.io/badge/macOS-tested-56607c?logo=apple&logoColor=white)](#what-you-need)
+[![Linux](https://img.shields.io/badge/Linux-tested%20in%20CI-56607c?logo=linux&logoColor=white)](https://github.com/SolanceLab/antechamber/actions/workflows/test.yml)
+[![Windows](https://img.shields.io/badge/Windows-untested-9aa0a6?logo=windows&logoColor=white)](https://github.com/SolanceLab/antechamber/issues)
 
 </div>
 
